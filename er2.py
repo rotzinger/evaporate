@@ -2,18 +2,25 @@
 from numpy import arange
 
 # Enthought library imports
-from enthought.enable.api import Window, Component, ComponentEditor
-from enthought.traits.api import HasTraits, Instance ,Float, Button,false
-from enthought.traits.ui.api import Item, Group,VGroup,HGroup, View, HSplit, VSplit, HFlow
-# Chaco imports
-from enthought.chaco.api import HPlotContainer, ArrayPlotData, Plot,VPlotContainer
+try:
+	from enthought.enable.api import Window, Component, ComponentEditor
+	from enthought.traits.api import HasTraits, Instance ,Float, Button,false
+	from enthought.traits.ui.api import Item, Group,VGroup,HGroup, View, HSplit, VSplit, HFlow
+	# Chaco imports
+	from enthought.chaco.api import HPlotContainer, ArrayPlotData, Plot,VPlotContainer
+except:
+        from enable.api import Window, Component, ComponentEditor
+        from traits.api import HasTraits, Instance ,Float, Button,false
+        from traitsui.api import Item, Group,VGroup,HGroup, View, HSplit, VSplit, HFlow
+        # Chaco imports
+        from chaco.api import HPlotContainer, ArrayPlotData, Plot,VPlotContainer
 
 from time import sleep
 from threading import Thread, Lock
 
 # import modules
 import lib.er_ratedev as r_dev
-from lib.er_ftdidev import er_output as o_dev
+#from lib.er_ftdidev import er_output as o_dev
 import lib.tip_pidcontrol as er_pid
 
 

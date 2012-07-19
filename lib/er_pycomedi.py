@@ -9,8 +9,8 @@ except:
 
 class IO_Dev(object):
   def __init__(self):
-    device = Device('/dev/comedi0')
-    device.open()
+    self.device = Device('/dev/comedi0')
+    self.device.open()
 
   def close(self):
     # Close the device when you're done.
@@ -21,7 +21,7 @@ class IO_Dev(object):
     Get your I/O subdevice (alternatively, use `device.subdevice()` to
     select the subdevice directly by index).
     """
-    subdevice = device.find_subdevice_by_type(SUBDEVICE_TYPE.ai)
+    subdevice = self.device.find_subdevice_by_type(SUBDEVICE_TYPE.ai)
     # Generate a list of channels you wish to control.
 
     channels = [subdevice.channel(i, factory=AnalogChannel, aref=AREF.diff) for i in (0, 1, 2, 3)]
@@ -34,22 +34,24 @@ class IO_Dev(object):
     self.ai_converters = [c.get_converter() for c in channels]
     
   def configure_ao(self):
-      """
-    Get your I/O subdevice (alternatively, use `device.subdevice()` to
-    select the subdevice directly by index).
-    """
-    subdevice = device.find_subdevice_by_type(SUBDEVICE_TYPE.ai)
-    # Generate a list of channels you wish to control.
+     """
+     Get your I/O subdevice (alternatively, use `device.subdevice()` to
+     select the subdevice directly by index).
+     """
+     self.ao_subdevice = self.device.find_subdevice_by_type(SUBDEVICE_TYPE.ao)
+     # Generate a list of channels you wish to control.
 
-    channels = [subdevice.channel(i, factory=AnalogChannel, aref=AREF.diff) for i in (0, 1, 2, 3)]
+     self.ao_channels = [self.ao_subdevice.channel(i, factory=AnalogChannel, aref=AREF.diff) for i in (0, 1)]
+     #for chan in channels: print chan
+     # Configure the channels.
 
-    # Configure the channels.
-
-    for chan in channels:
-      chan.range = chan.find_range(unit=UNIT.volt, min=0, max=5)
+     for chan in self.ao_channels:
+       chan.range = chan.find_range(unit=UNIT.volt, min=0, max=5)
       
   def output(self,channel,volt_output_signal):
-    channel.data_write(self.ao_converters[channel].from_physical(volt_output_signal))
+     channel = self.ao_channels[channel]
+     ao_converter = channel.get_converter()
+     channel.data_write(ao_converter.from_physical(volt_output_signal))
     
   def input(self,channel):
     # Read/write sequentially.
@@ -66,6 +68,15 @@ class IO_Dev(object):
 
 
 
+if __name__== '__main__':
+   import sys
+   # sys.argv[1]
+   iod = IO_Dev()
+   iod.configure_ao()
+   iod.output(0,float(sys.argv[1]))
+   #iod.output(1,0)
+   iod.close()
+    
 
 
 """

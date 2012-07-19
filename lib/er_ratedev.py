@@ -23,7 +23,8 @@ class Rate_Dev(object):
         timeout = 0.1
         if 1:
             # Port A on the USB_to_serial converter, Port B ends with K
-            device = "/dev/tty.usbserial-FTB4J8SC" 
+            device = "/dev/tty.usbserial-FTB4J8SC"
+            device = "/dev/ttyUSB0" 
             self.ser = self._std_open(device,baudrate,timeout)
             atexit.register(self.ser.close)
         if 0:
@@ -82,3 +83,9 @@ class Rate_Dev(object):
     def getThickness(self):
         thickness = float(self.remote_cmd(self.cmds.get_thickness))
         return thickness
+if __name__ == "__main__":
+
+    rd=Rate_Dev()
+    #print rd.getHello()
+    print 'Rate:',rd.getRate()/10
+    print 'Thickness:',rd.getThickness()*100
