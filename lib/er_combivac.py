@@ -14,6 +14,7 @@ class Pressure_Dev(object):
         
         # Port A on the USB_to_serial converter,Port A with C, Port B ends with K
         device = "/dev/tty.usbserial-FTB4J8SK" 
+	device = "/dev/ttyUSB1"
         self.ser = self._std_open(device,baudrate,timeout)
         atexit.register(self.ser.close)
             
@@ -57,17 +58,27 @@ class Pressure_Dev(object):
     def getTM1(self):
         value = self.remote_cmd("MES R TM1")
         # "TM1:MBAR  : 1.00E+03"
-        gauge,pressure = value.split(" : ")
-        return float(pressure.strip())
-    
+	try:
+        	gauge,pressure = value.split(" : ")
+        	return float(pressure.strip())
+    	except:
+		return None
+
     def getTM2(self):
         value = self.remote_cmd("MES R TM2")
         # "TM1:MBAR  : 1.00E+03"
-        gauge,pressure = value.split(" : ")
-        return float(pressure.strip())
-    
+	try:
+        	gauge,pressure = value.split(" : ")
+		return float(pressure.strip())
+    	except:
+		return None
     def getPM(self):
-        return self.remote_cmd("MES R PM1")
+        value = self.remote_cmd("MES R PM1")
+        try:
+                gauge,pressure = value.split(" : ")
+                return float(pressure.strip())
+        except:
+                return None
     def setHV(self,on=True):
         if on:
             return self.remote_cmd("HVs w pm1,On")
@@ -76,5 +87,5 @@ class Pressure_Dev(object):
 if __name__ == "__main__":
     p1 = Pressure_Dev()
     #print p1.setHV(on=False)
-    print p1.getPM()
-    
+    print "Penning:", p1.getPM()
+    print "Pirani 1:", p1.getTM1()    
