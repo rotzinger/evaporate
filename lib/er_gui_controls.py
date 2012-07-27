@@ -116,19 +116,19 @@ class InOutThread(Thread):
             if self.ER.P_acquire:
                 try:
                     "get Pressure from gauge"
-                    m_Pressure = data.P_Dev.getPM()
+                    m_Pressure = float(self.ER.data.P_Dev.getPM())
                     # save the data to the data
                     self.ER.Pressure = m_Pressure
-                    data.set_Pressure(m_Pressure)
+                    self.ER.data.set_Pressure(m_Pressure)
                 except:
                     print "no Pressure measurement taken"
-                
+                    
                 
             if self.ER.P_regulate:
                 # calculate new output value
-                o_new_val, error = data.press_pid.get_correcting_value(m_Pressure)
+                o_new_val, error = self.ER.data.press_pid.get_correcting_value(m_Pressure)
                 # the DAQ generates a voltage, the MFC generates a mass flow from this.
-                data.DAQ_Dev.output(0,o_new_val)
+                self.ER.data.DAQ_Dev.output(0,o_new_val)
                 # save the error
                 print o_new_val, error
                 #data.set_pidE(error)

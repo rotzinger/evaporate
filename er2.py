@@ -50,9 +50,9 @@ if True:
                     def output(self,channel, value): return 0
         data.DAQ_Dev = DAQ_Dev()
         
-    try:
+    try:    
         import lib.er_combivac as combivac
-        data.P_Dev = Pressure_Dev()
+        data.P_Dev = combivac.Pressure_Dev()
         #print data.P_Dev.setHV(on=False)
         #print data.P_Dev.getPM()        
     except:
