@@ -13,7 +13,7 @@ except:
 
 from time import sleep
 from threading import Thread, Lock
-
+import lib.er_pidcontrol as er_pid
 
 
 
@@ -69,11 +69,11 @@ class ER_State(HasTraits):
         if self.P_acquire and not self.P_regulate:
             print "Regulate pressure started"
             self.P_regulate = True
-            data.press_pid = er_pid.pidcontrol()
-            data.press_pid.set_P(self.P)
-            data.press_pid.set_I(self.I)
-            data.press_pid.set_D(self.D)
-            data.press_pid.set_ctrl_value(self.SetPressure)
+            self.data.press_pid = er_pid.pidcontrol()
+            self.data.press_pid.set_P(self.P)
+            self.data.press_pid.set_I(self.I)
+            self.data.press_pid.set_D(self.D)
+            self.data.press_pid.set_ctrl_value(self.SetPressure)
         else:
             print "Regulate pressure fired off"
             self.P_regulate = False
@@ -85,13 +85,13 @@ class ER_State(HasTraits):
         pass
 
     def _P_changed(self):
-        data.press_pid.set_P(self.P)
+        self.data.press_pid.set_P(self.P)
     def _I_changed(self):
-        data.press_pid.set_I(self.I)
+        self.data.press_pid.set_I(self.I)
     def _D_changed(self):
-        data.press_pid.set_D(self.D)
+        self.data.press_pid.set_D(self.D)
     def _SetPressure_changed(self):
-        data.press_pid.set_ctrl_value(self.SetPressure)
+        self.data.press_pid.set_ctrl_value(self.SetPressure)
         
     # check thread
     def inout_data(self):
@@ -111,7 +111,7 @@ class InOutThread(Thread):
         m_Pressure = 0
         SetPressure = self.ER.SetPressure
         
-        while self.Continuous:
+        while self.ER.P_acquire:
             sleep(0.8)
             if self.ER.P_acquire:
                 try:
@@ -122,14 +122,18 @@ class InOutThread(Thread):
                     self.ER.data.set_Pressure(m_Pressure)
                 except:
                     print "no Pressure measurement taken"
-                    
+                    raise    
                 
-            if self.ER.P_regulate:
-                # calculate new output value
-                o_new_val, error = self.ER.data.press_pid.get_correcting_value(m_Pressure)
-                # the DAQ generates a voltage, the MFC generates a mass flow from this.
-                self.ER.data.DAQ_Dev.output(0,o_new_val)
-                # save the error
-                print o_new_val, error
-                #data.set_pidE(error)
+                if self.ER.P_regulate:
+                    # calculate new output value
+                    o_new_val, error = self.ER.data.press_pid.get_correcting_value(m_Pressure)
+                    
+                    # the DAQ generates a voltage, the MFC generates a mass flow from this.
+                    self.ER.data.DAQ_Dev.output(0,o_new_val)
+                    # save the error and output
+                    self.ER.data.set_P_error(error)
+                    self.ER.data.set_P_output(o_new_val)
+                    print o_new_val, error
+                    #data.set_pidE(error)
+
         print "Exit pressure monitor thread"

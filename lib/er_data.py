@@ -17,7 +17,7 @@ class DATA(object):
 
         self.pid = 0
         self.r_dev = 0
-        self.pressure_array = zeros(1000)
+        #self.pressure_array = zeros(1000)
         self.lock = Lock()
         
     def get_thickness(self):
@@ -35,9 +35,18 @@ class DATA(object):
     def set_Pressure(self,m_Pressure):
         with self.lock:
             self.m_pressure = m_Pressure
-            self.pressure_array= delete(
-                append(self.pressure_array,m_Pressure),0)
-            
+            self.er_plots._gen_pressure_array(m_Pressure)
+    def set_P_error(self,P_error):
+        #print "P_error"
+        with self.lock:
+            self.P_error = P_error
+            self.er_plots._gen_P_error_array(P_error)
+    def set_P_output(self,P_output):
+        #print "P_output"
+        with self.lock:
+            self.P_output = P_output
+            self.er_plots._gen_P_output_array(P_output)    
+
     # not sure if this is really needed
     def set_pid_p(self,P):
         with self.lock:

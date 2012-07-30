@@ -7,12 +7,12 @@
 #if __name__ == '__main__':
 if True:
     # this should always work ;-)
-    from lib.er_data import DATA    
-    #global data 
+    from lib.er_data import DATA 
     data = DATA()
     
-    import lib.er_pidcontrol as er_pid
-    data.pid = er_pid.pidcontrol()
+    # create permanent pid object
+    #import lib.er_pidcontrol as er_pid
+    #data.press_pid = er_pid.pidcontrol()
     # gui
 
     from lib.er_gui_controls import ER_State
@@ -21,8 +21,7 @@ if True:
     ER_plot_component.data = data
     from lib.er_gui import EvapoRate
     EvapoRate.data = data
-    print "main",dir(data)
-
+    
     # try loading devices ...
     try:
         # import modules

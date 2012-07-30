@@ -1,14 +1,14 @@
-from numpy import arange
+from numpy import arange,zeros,delete, append
 
 try:
     from enthought.enable.api import Window, Component, ComponentEditor
-    from enthought.traits.api import HasTraits, Instance ,Float, Button,false
+    from enthought.traits.api import HasTraits, Instance ,Float, Button,Array,false,on_trait_change
     from enthought.traits.ui.api import Item, Group,VGroup,HGroup, View, HSplit, VSplit, HFlow
     # Chaco imports
     from enthought.chaco.api import HPlotContainer, ArrayPlotData, Plot,VPlotContainer
 except:
     from enable.api import Window, Component, ComponentEditor
-    from traits.api import HasTraits, Instance ,Float, Button,false
+    from traits.api import HasTraits, Instance ,Float, Button,Array,false,on_trait_change
     from traitsui.api import Item, Group,VGroup,HGroup, View, HSplit, VSplit, HFlow
     # Chaco imports
     from chaco.api import HPlotContainer, ArrayPlotData, Plot,VPlotContainer
@@ -17,54 +17,58 @@ class ER_plot_component(HasTraits):
     view = View( Group(Item(name='container',editor=ComponentEditor(),show_label=False)))
     def __init__(self,data, **traits):
         HasTraits.__init__(self, **traits)
+        numpoints = 100
+        self.pressure_array = zeros(numpoints)
+        self.P_error_array = zeros(numpoints)
+        self.P_output_array = zeros(numpoints)
         
         # Create the index
-        numpoints = 1000
-        low = -5
-        high = 15.0
-        x = arange(low, high, (high-low)/numpoints)
-        plotdata = ArrayPlotData(x=x, y1=x, y2=x**2)
+        #numpoints = 1000
+        #x = arange(numpoints)
+        #plotdata = ArrayPlotData(x=x, y1=x, y2=x**2)
 
-        rate_plot = Plot(plotdata)
-        rate_plot.y_axis.title = "rate [nm/s]"
-        renderer = rate_plot.plot(("x", "y1"), type="line", color="blue", width=2.0)[0]
         
-        thickness_plot = Plot(plotdata)
-        thickness_plot.index_range = rate_plot.index_range
-        thickness_plot.y_axis.title = "thickness [nm]"
-        thickness_plot.plot(("x", "y2"),type="line", color="blue")
-        thickness_plot.x_axis.title = "time"
-        
-        
-        current_plot = Plot(plotdata)
-        current_plot.index_range = rate_plot.index_range
-        current_plot.y_axis.title = "Current [A]"
-        current_plot.plot(("x", "y2"),type="line", color="blue")
-    
-        print "hallo" #data.pressure_array
-        #pressure_pd = ArrayPlotData(x=x, y1=data.pressure_array)
-        pressure_plot = Plot(plotdata)
-        pressure_plot.index_range = rate_plot.index_range
-        pressure_plot.y_axis.title = "Current [A]"
-        pressure_plot.plot(("x", "y2"),type="line", color="blue")    
+        self.pressure_pd = ArrayPlotData(pressure=self.pressure_array)
+        self.pressure_plot = Plot(self.pressure_pd)
+        self.pressure_plot.y_axis.title = "Pressure [mBar]"
+        self.pressure_plot.plot(("pressure"),type="line", color="blue")
 
-
-        self.rate_plot = rate_plot
-        self.pressure_plot = pressure_plot
-        self.thickness_plot = thickness_plot
-        self.pressure_plot = pressure_plot
-        self.current_plot  = current_plot
-        container = VPlotContainer(stack_order="top_to_bottom",background="lightgray")
-        container.spacing = 0
-        self.current_plot.padding_top = self.rate_plot.padding_bottom
+        self.P_error_pd = ArrayPlotData(P_error=self.P_error_array)
+        self.P_errror_plot = Plot(self.P_error_pd)
+        self.P_errror_plot.index_range = self.pressure_plot.index_range
+        self.P_errror_plot.y_axis.title = "Error [mBar]"
+        self.P_errror_plot.plot(("P_error"),type="line", color="blue")
+        
+        self.P_output_pd = ArrayPlotData(P_output=self.P_output_array)
+        self.P_output_plot = Plot(self.P_output_pd)
+        self.P_output_plot.index_range = self.pressure_plot.index_range
+        self.P_output_plot.y_axis.title = "P_output [V]"
+        self.P_output_plot.plot(("P_output"),type="line", color="blue")        
+        
+        self.container = VPlotContainer(stack_order="top_to_bottom",background="lightgray")
+        self.container.spacing = 0
+        self.P_output_plot.padding_top = self.pressure_plot.padding_bottom
         
         
-        container.add(self.rate_plot)
-        #container.add(self.current_plot)
-        container.add(self.pressure_plot)
-        container.add(self.thickness_plot)
-        container.add(self.pressure_plot)
-        self.container = container
-        #self.view = View( Group(Item(name='self.container',editor=ComponentEditor(),show_label=False)))
+        self.container.add(self.pressure_plot)
+        self.container.add(self.P_errror_plot)
+        self.container.add(self.P_output_plot)
+        
+    def _gen_pressure_array(self, m_Pressure):
+        #print "_generate array called"
+        self.pressure_array= delete(
+            append(self.pressure_array,m_Pressure),0)
+        self.pressure_pd.set_data("pressure",self.pressure_array)
+        
+    def _gen_P_error_array(self, P_error):
+        #print "_generate array called"
+        self.P_error_array = delete(
+            append(self.P_error_array,P_error),0)
+        self.P_error_pd.set_data("P_error",self.P_error_array)    
 
+    def _gen_P_output_array(self, P_output):
+            #print "_generate array called"
+            self.P_output_array = delete(
+                append(self.P_output_array,P_output),0)
+            self.P_output_pd.set_data("P_output",self.P_output_array)         
 #===============================================================================
