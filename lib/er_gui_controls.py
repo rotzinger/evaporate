@@ -112,7 +112,7 @@ class InOutThread(Thread):
         SetPressure = self.ER.SetPressure
         
         while self.ER.P_acquire:
-            sleep(0.8)
+            sleep(2)
             if self.ER.P_acquire:
                 try:
                     "get Pressure from gauge"
@@ -120,6 +120,10 @@ class InOutThread(Thread):
                     # save the data to the data
                     self.ER.Pressure = m_Pressure
                     self.ER.data.set_Pressure(m_Pressure)
+		    #f = open('log_pressure.dat','a')
+		    #f.write(str(m_Pressure))
+	  	    #f.write('\n')
+
                 except:
                     print "no Pressure measurement taken"
                     raise    
@@ -135,5 +139,5 @@ class InOutThread(Thread):
                     self.ER.data.set_P_output(o_new_val)
                     print o_new_val, error
                     #data.set_pidE(error)
-
+        #f.close()
         print "Exit pressure monitor thread"
