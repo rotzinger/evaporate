@@ -17,7 +17,7 @@ class ER_plot_component(HasTraits):
     view = View( Group(Item(name='container',editor=ComponentEditor(),show_label=False)))
     def __init__(self,data, **traits):
         HasTraits.__init__(self, **traits)
-        numpoints = 100
+        numpoints = 20
         self.pressure_array = zeros(numpoints)
         self.P_error_array = zeros(numpoints)
         self.P_output_array = zeros(numpoints)
@@ -31,7 +31,10 @@ class ER_plot_component(HasTraits):
         self.pressure_pd = ArrayPlotData(pressure=self.pressure_array)
         self.pressure_plot = Plot(self.pressure_pd)
         self.pressure_plot.y_axis.title = "Pressure [mBar]"
-        self.pressure_plot.plot(("pressure"),type="line", color="blue")
+        self.pressure_plot.value_scale = "log"
+        #self.pressure_plot.ticks.log_auto_ticks(1e-7, 1e-4, 'auto', 'auto', 'auto')
+	self.pressure_plot.plot(("pressure"),type="line", color="blue") 
+
 
         self.P_error_pd = ArrayPlotData(P_error=self.P_error_array)
         self.P_errror_plot = Plot(self.P_error_pd)
