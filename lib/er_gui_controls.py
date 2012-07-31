@@ -18,7 +18,7 @@ import lib.er_pidcontrol as er_pid
 
 
 class ER_State(HasTraits):
-    SetPressure = Float()
+    SetPressure = Float(0,desc="set D parameter",auto_set=False, enter_set=True)
     Pressure = Float()
     Rate = Float(0)
     Thickness = Float(0)

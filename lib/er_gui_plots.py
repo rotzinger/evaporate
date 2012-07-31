@@ -48,13 +48,13 @@ class ER_plot_component(HasTraits):
         self.P_errror_plot.index_range = self.pressure_plot.index_range
         self.P_errror_plot.y_axis.title = "Error [mBar]"
         self.P_errror_plot.plot(("P_error"),type="line", color="blue")
-        
+	self.P_errror_plot.padding_left = 80        
         self.P_output_pd = ArrayPlotData(P_output=self.P_output_array)
         self.P_output_plot = Plot(self.P_output_pd)
         self.P_output_plot.index_range = self.pressure_plot.index_range
         self.P_output_plot.y_axis.title = "P_output [V]"
         self.P_output_plot.plot(("P_output"),type="line", color="blue")        
-        
+        self.P_output_plot.padding_left = 80
         self.container = VPlotContainer(stack_order="top_to_bottom",background="lightgray")
         self.container.spacing = -75
         #self.P_output_plot.padding_top = self.pressure_plot.padding_bottom
