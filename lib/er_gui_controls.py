@@ -24,8 +24,8 @@ class ER_State(HasTraits):
     Thickness = Float(0)
     Regulate = Button()
     Acquire = Button()
-    P = Float(100000.,desc="set P parameter",auto_set=False, enter_set=True)
-    I = Float(1000,desc="set I parameter",auto_set=False, enter_set=True)
+    P = Float(0.1,desc="set P parameter",auto_set=False, enter_set=True)
+    I = Float(0.01,desc="set I parameter",auto_set=False, enter_set=True)
     D = Float(0.00,desc="set D parameter",auto_set=False, enter_set=True)
     inout_thread = ""
     P_acquire = False
@@ -138,7 +138,10 @@ class InOutThread(Thread):
                 if self.ER.P_regulate:
                     # calculate new output value
                     o_new_val, error = self.ER.data.press_pid.get_correcting_value(m_Pressure)
-		    print 'output value', o_new_val
+		    # scale to reasonable voltages
+		    o_new_val= o_new_val*1e6
+		    
+		    print 'V output value, error', o_new_val, error
                     if o_new_val>1: o_new_val = 1 
 	 	    if o_new_val<0.0001: o_new_val = 0.05
                     # the DAQ generates a voltage, the MFC generates a mass flow from this.
