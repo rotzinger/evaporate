@@ -61,6 +61,23 @@ if True:
             def getPM(self): return random()*1e-5
         data.P_Dev = P_Dev()
         #data.P_Dev.getPM()
+    try:
+        import lib.er_ratedev as ratedev
+        data.R_Dev=ratedev.Rate_Dev()
+        #print rd.getHello()
+        #print 'Rate:',rd.getRate()/10
+        #print 'Thickness:',rd.getThickness()*100        
+    except:
+        print ("ER: inficon ratedev device not loaded, loading dummy.")
+        from random import random
+        class Rate_Dev(object):
+                    def getRate(self,nm=False): return random()*10
+                    def getThickness(self,nm=False): return random()*100
+        data.R_Dev = Rate_Dev()
+        # print 'Rate:',data.R_Dev.getRate(nm=True)
+        # print 'Thickness:',data.R_Dev.getThickness(nm=True)        
+        
+
     title="EvapoRate v2 HR@KIT/2012"
     ER = EvapoRate(data=data)
     ER.configure_traits()

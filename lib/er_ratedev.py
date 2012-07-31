@@ -76,15 +76,25 @@ class Rate_Dev(object):
     
     def getHello(self):
         return self.remote_cmd(self.cmds.get_hello)
-    def getRate(self):
+    def getRate(self, nm=False):
         rate = float(self.remote_cmd(self.cmds.get_rate))
-        return rate
+        if nm:
+            #return rate in nm
+            return rate/10.
+        else:
+            # return rate in A (10^-10m)
+            return rate
 
-    def getThickness(self):
+    def getThickness(self, nm=False):
         thickness = float(self.remote_cmd(self.cmds.get_thickness))
-        return thickness
+        if nm:
+            # return thickness in nm
+            return thickness*100.
+        else:
+            # return thickness in kA (10^-7m)
+            return thickness
+        
 if __name__ == "__main__":
-
     rd=Rate_Dev()
     #print rd.getHello()
     print 'Rate:',rd.getRate()/10

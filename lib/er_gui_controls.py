@@ -20,6 +20,8 @@ import lib.er_pidcontrol as er_pid
 class ER_State(HasTraits):
     SetPressure = Float(1e-6)
     Pressure = Float()
+    Rate = Float(0)
+    Thickness = Float(0)
     Regulate = Button()
     Acquire = Button()
     P = Float(0.10,desc="set P parameter",auto_set=False, enter_set=True)
@@ -33,6 +35,11 @@ class ER_State(HasTraits):
             VGroup(
                 Item(name='Acquire'),
                 Item(name='Pressure',style="readonly"),
+                show_border=True,
+                ),
+            VGroup(
+                Item(name='Thickness',style="readonly"),
+                Item(name='Rate',style="readonly"),
                 show_border=True,
                 ),
 
@@ -112,7 +119,7 @@ class InOutThread(Thread):
         SetPressure = self.ER.SetPressure
         
         while self.ER.P_acquire:
-            sleep(2)
+            sleep(1)
             if self.ER.P_acquire:
                 try:
                     "get Pressure from gauge"
@@ -123,7 +130,11 @@ class InOutThread(Thread):
 		    #f = open('log_pressure.dat','a')
 		    #f.write(str(m_Pressure))
 	  	    #f.write('\n')
-
+		    
+		    # for now we get Rate and Thickness also in this thread
+		    self.ER.Rate = self.ER.data.R_Dev.getRate(nm=True)
+		    self.ER.Thickness = self.ER.data.R_Dev.getThickness(nm=True)
+		    
                 except:
                     print "no Pressure measurement taken"
                     raise    
