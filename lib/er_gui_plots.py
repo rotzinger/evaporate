@@ -17,12 +17,13 @@ except:
     from chaco.api import HPlotContainer, ArrayPlotData, Plot,VPlotContainer, PlotAxis
     from chaco.scales.formatters import BasicFormatter
     from chaco.scales_tick_generator  import ScalesTickGenerator
+    from chaco.scales.api import DefaultScale, LogScale, ScaleSystem
 
 class ER_plot_component(HasTraits):
     view = View( Group(Item(name='container',editor=ComponentEditor(),show_label=False)))
     def __init__(self,data, **traits):
         HasTraits.__init__(self, **traits)
-        numpoints = 20
+        numpoints = 100
         self.pressure_array = zeros(numpoints)
         self.P_error_array = zeros(numpoints)
         self.P_output_array = zeros(numpoints)

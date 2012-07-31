@@ -18,18 +18,17 @@ import lib.er_pidcontrol as er_pid
 
 
 class ER_State(HasTraits):
-    SetPressure = Float(1e-6)
+    SetPressure = Float()
     Pressure = Float()
     Rate = Float(0)
     Thickness = Float(0)
     Regulate = Button()
     Acquire = Button()
-    P = Float(0.10,desc="set P parameter",auto_set=False, enter_set=True)
-    I = Float(0.01,desc="set I parameter",auto_set=False, enter_set=True)
+    P = Float(100000.,desc="set P parameter",auto_set=False, enter_set=True)
+    I = Float(1000,desc="set I parameter",auto_set=False, enter_set=True)
     D = Float(0.00,desc="set D parameter",auto_set=False, enter_set=True)
     inout_thread = ""
     P_acquire = False
-    
     view = View(
         Group(
             VGroup(
@@ -69,14 +68,15 @@ class ER_State(HasTraits):
             self.P_acquire = False
             self.P_regulate = False
             print "Aquire fired, thread stopped"
-            
-        
-        
+
+    def _SetPressure_default(self):
+        self.data.press_pid = er_pid.pidcontrol()            
+        return 1e-7 
     def _Regulate_fired(self):
         if self.P_acquire and not self.P_regulate:
             print "Regulate pressure started"
             self.P_regulate = True
-            self.data.press_pid = er_pid.pidcontrol()
+            #self.data.press_pid = er_pid.pidcontrol()
             self.data.press_pid.set_P(self.P)
             self.data.press_pid.set_I(self.I)
             self.data.press_pid.set_D(self.D)
@@ -85,12 +85,6 @@ class ER_State(HasTraits):
             print "Regulate pressure fired off"
             self.P_regulate = False
             
-            
-    def _Regulate_default(self):
-        pass
-    def _Tctrl_changed(self):
-        pass
-
     def _P_changed(self):
         self.data.press_pid.set_P(self.P)
     def _I_changed(self):
@@ -119,14 +113,16 @@ class InOutThread(Thread):
         SetPressure = self.ER.SetPressure
         
         while self.ER.P_acquire:
-            sleep(1)
+            sleep(.5)
             if self.ER.P_acquire:
                 try:
                     "get Pressure from gauge"
-                    m_Pressure = float(self.ER.data.P_Dev.getPM())
+                    m_Pressure_tmp = self.ER.data.P_Dev.getPM()
                     # save the data to the data
-                    self.ER.Pressure = m_Pressure
-                    self.ER.data.set_Pressure(m_Pressure)
+		    if m_Pressure_tmp:
+			m_Pressure = m_Pressure_tmp	
+                    	self.ER.Pressure = m_Pressure_tmp
+                    	self.ER.data.set_Pressure(m_Pressure)
 		    #f = open('log_pressure.dat','a')
 		    #f.write(str(m_Pressure))
 	  	    #f.write('\n')
@@ -142,7 +138,9 @@ class InOutThread(Thread):
                 if self.ER.P_regulate:
                     # calculate new output value
                     o_new_val, error = self.ER.data.press_pid.get_correcting_value(m_Pressure)
-                    
+		    print 'output value', o_new_val
+                    if o_new_val>1: o_new_val = 1 
+	 	    if o_new_val<0.0001: o_new_val = 0.05
                     # the DAQ generates a voltage, the MFC generates a mass flow from this.
                     self.ER.data.DAQ_Dev.output(0,o_new_val)
                     # save the error and output
