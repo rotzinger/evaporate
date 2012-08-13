@@ -1,8 +1,11 @@
 from numpy import arange,delete,append, zeros
 from threading import Thread, Lock
+
+
+
 # data share
 class DATA(object):
-    "data object"
+    "data object"    
     def __init__(self):
         # define operational variables
         self.m_thickness = 0
@@ -10,15 +13,21 @@ class DATA(object):
         self.m_time    = 0
         self.m_error   = 0
         self.o_new_val = 0
-        # not used anymore
-        #self.pid_P = 0
-        #self.pid_I = 0
-        #self.pid_D = 0
 
+        # Placeholders for the plot settings and data, pid object
+        # Pressure 
+        self.P_plot = 0
+        self.P_pid = 0
+        # Pressure error
+        self.PE_plot = 0
+        # Pressure correcting output
+        self.PO_plot = 0
+        
         self.pid = 0
         self.r_dev = 0
         #self.pressure_array = zeros(1000)
         self.lock = Lock()
+        
         
     def get_thickness(self):
         return self.m_thickness
@@ -35,18 +44,18 @@ class DATA(object):
     def set_Pressure(self,m_Pressure):
         with self.lock:
             self.m_pressure = m_Pressure
-            self.er_plots._gen_pressure_array(m_Pressure)
+            self.P_plot._gen_array(m_Pressure)
     def set_P_error(self,P_error):
         #print "P_error"
         with self.lock:
             self.P_error = P_error
-            self.er_plots._gen_P_error_array(P_error)
+            self.PE_plot._gen_array(P_error)
     def set_P_output(self,P_output):
         #print "P_output"
         with self.lock:
             self.P_output = P_output
-            self.er_plots._gen_P_output_array(P_output)    
-
+            self.PO_plot._gen_array(P_output)    
+"""
     # not sure if this is really needed
     def set_pid_p(self,P):
         with self.lock:
@@ -57,3 +66,4 @@ class DATA(object):
     def set_pid_d(self,D):
         with self.lock:
             self.pid.set_D(D)
+"""

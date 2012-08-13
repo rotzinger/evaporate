@@ -1,13 +1,13 @@
 try:
     from enthought.enable.api import Window, Component, ComponentEditor
-    from enthought.traits.api import HasTraits, Instance ,Float, Button,false
-    from enthought.traits.ui.api import Item, Group,VGroup,HGroup, View, HSplit, VSplit, HFlow
+    from enthought.traits.api import HasTraits, Instance ,Float, Bool, Button,Event,Str,false
+    from enthought.traits.ui.api import Item, Group,VGroup,HGroup, View, HSplit, VSplit, HFlow,ButtonEditor,Handler
     # Chaco imports
     from enthought.chaco.api import HPlotContainer, ArrayPlotData, Plot,VPlotContainer
 except:
     from enable.api import Window, Component, ComponentEditor
-    from traits.api import HasTraits, Instance ,Float, Button,false
-    from traitsui.api import Item, Group,VGroup,HGroup, View, HSplit, VSplit, HFlow
+    from traits.api import HasTraits, Instance ,Float,Bool, Button,Event,Str,false
+    from traitsui.api import Item, Group,VGroup,HGroup, View, HSplit, VSplit, HFlow, ButtonEditor,Handler
     # Chaco imports
     from chaco.api import HPlotContainer, ArrayPlotData, Plot,VPlotContainer
 
@@ -15,141 +15,342 @@ from time import sleep
 from threading import Thread, Lock
 import lib.er_pidcontrol as er_pid
 
+from lib.er_io_threads import PressureThread
 
+from er_gui_plots import ER_plot_component
 
+class StateHandler(Handler):
+    def object_P_event_changed(self, info):
+        print "State object: event toggle PP"
+	info.object.Pressure_Plot = False
+    def object_PE_event_changed(self, info):
+	print "State object: event toggle PE"
+	info.object.P_error_Plot = False    
+    def object_PO_event_changed(self, info):
+	print "State object: event toggle PO"
+	info.object.P_output_Plot = False
+    def object_F_T_event_changed(self, info):
+	print "State object: event toggle F_T"
+	info.object.F_T_Plot = False    
+	
 class ER_State(HasTraits):
+    # window open/close notification
+    P_event = Event
+    PE_event = Event
+    PO_event = Event
+    #Pressure_event = Event
+
+    # Pressure
+
+    Pressure = Float(0)
+    Pressure_Plot = Bool(False)
+
+    P_error = Float(0)
+    P_error_Plot = Bool(False)
+    P_output = Float(0)
+    P_output_Plot = Bool(False)    
+    
+    P_Acquire = Event
+    P_Acquire_label = Str("Start")
+    P_Acquire_state = Bool(False)
+    
     SetPressure = Float(0,desc="set D parameter",auto_set=False, enter_set=True)
-    Pressure = Float()
-    Rate = Float(0)
-    Thickness = Float(0)
-    Regulate = Button()
-    Acquire = Button()
-    P = Float(0.1,desc="set P parameter",auto_set=False, enter_set=True)
-    I = Float(0.01,desc="set I parameter",auto_set=False, enter_set=True)
-    D = Float(0.00,desc="set D parameter",auto_set=False, enter_set=True)
-    inout_thread = ""
-    P_acquire = False
+    P_Regulate = Button()
+    P_Regulate_state = Bool(False)
+    
+    P_P = Float(0.1,desc="set P parameter",auto_set=False, enter_set=True)
+    P_I = Float(0.01,desc="set I parameter",auto_set=False, enter_set=True)
+    P_D = Float(0.00,desc="set D parameter",auto_set=False, enter_set=True)
+    
+    # film
+    F_Acquire = Event
+    F_Acquire_label = Str("Start")
+    F_Acquire_state = Bool(False)
+    
+    #Rate = Float(0)
+    #Thickness = Float(0)
+    
+    F_T = Float(0)
+    F_T_Plot = Bool(False)
+    F_R = Float(0)
+    F_R_Plot = Bool(False)
+    
+    F_R_Regulate = Bool(False)
+    
+    F_R_error = Float(0)
+    F_R_error_Plot = Bool(False)
+    F_R_output = Float(0)
+    F_R_output_Plot = Bool(False)    
+    
+    Set_F_R = Float(0,desc="set Film rate parameter",auto_set=False, enter_set=True)
+    F_P = Float(0.1,desc="set P parameter",auto_set=False, enter_set=True)
+    F_I = Float(0.01,desc="set I parameter",auto_set=False, enter_set=True)
+    F_D = Float(0.00,desc="set D parameter",auto_set=False, enter_set=True)
+    
+
+    # display number format
+    readonly_fmt = "%.2g "
+    # dummy variable to maintain the threads
+    pressure_thread = 0
+    film_thread = 0
+    # Acquire state
+    
+    
     view = View(
+        HGroup(
         Group(
             VGroup(
-                Item(name='Acquire'),
-                Item(name='Pressure',style="readonly"),
+                Item('P_Acquire', label="Acquire", editor = ButtonEditor(label_value = 'P_Acquire_label')),
                 show_border=True,
                 ),
             VGroup(
-                Item(name='Thickness',style="readonly"),
-                Item(name='Rate',style="readonly"),
+                HGroup(
+                    Item(name='Pressure_Plot',label='Plot',style="custom"),
+                    Item(name='Pressure',style="readonly",format_str=readonly_fmt)
+                    ),
+                #Item(name="Pressure_regul",label="Regulate",style="custom"),
                 show_border=True,
                 ),
-
+            
+            #VGroup(
+                #HGroup(Item(name='Thickness_Plot',label='Plot',style="custom"),
+                       #Item(name='Thickness',style="readonly",format_str="%.2f "),
+                       #),
+                #HGroup(Item(name='Rate_Plot',label='Plot',style="custom"),
+                       #Item(name='Rate',style="readonly",format_str="%.2f ")),
+                #show_border=True,
+                #),
+            
             VGroup(
                 Item(name='SetPressure'),
+                Item(name='P_P',label='P'),
+                Item(name='P_I',label='I'),
+                Item(name='P_D',label='D'),
+                Item(name='P_Regulate'),
+                HGroup(
+                    Item(name='P_error_Plot',label='Plot',style="custom"),
+                    Item(name='P_error',style="readonly",format_str=readonly_fmt)
+                ),
+                HGroup(
+                    Item(name='P_output_Plot',label='Plot',style="custom"),
+                    Item(name='P_output',style="readonly",format_str=readonly_fmt),
+                ),                
+                show_border=True,enabled_when='P_Acquire_state',
+                ),
+            label="Pressure",),
+        # =======================================================================
+        Group(
+            VGroup(
+                Item('F_Acquire', label="Acquire", editor = ButtonEditor(label_value = 'F_Acquire_label')),
                 show_border=True,
                 ),
             VGroup(
-                Item(name='P'),
-                Item(name='I'),
-                Item(name='D'),
-                Item(name='Regulate'),show_border=True,
-                )
-            )
-        )
+                HGroup(
+                    Item(name='F_R_Plot',label='Plot',style="custom"),
+                    Item(name='F_R',label="Rate",style="readonly",format_str=readonly_fmt)
+                    ),
+                HGroup(Item(name='F_T_Plot',label='Plot',style="custom"),
+                       Item(name='F_T',label='Thickness',style="readonly",format_str=readonly_fmt),
+                       ),
+                Item(name="F_R_Regulate",label="Regulate",style="custom"),
+                show_border=True,
+                ),
+            VGroup(
+                Item(name='Set_F_R'),
+                Item(name='F_P',label='P'),
+                Item(name='F_I',label='I'),
+                Item(name='F_D',label='D'),
+                Item(name='F_Regulate'),
+                HGroup(
+                    Item(name='F_R_error_Plot',label='Plot',style="custom"),
+                    Item(name='F_R_error',style="readonly",format_str=readonly_fmt)
+                ),
+                HGroup(
+                    Item(name='F_R_output_Plot',label='Plot',style="custom"),
+                    Item(name='F_R_output',style="readonly",format_str=readonly_fmt),
+                ),                
+                show_border=True,enabled_when='F_Acquire_state',
+                ),
+            label="Film"), 
+        ),handler = StateHandler(),
+    )
+
     
-    # some important actions
-    def _Acquire_fired(self):
-        if not self.P_acquire: 
-            self.Continuous = True
-            self.P_acquire = True
-            self.P_regulate = False
-            aq = self.inout_data()
-            print "Aquire fired, thread started"            
+    # some important actions 
+    # Pressure
+    def _P_Acquire_fired(self):
+        if not self.P_Acquire_state:
+	    self.P_Acquire_label = 'Stop'
+            #self.Continuous = True
+            self.P_Acquire_state = True
+            self.P_regulate_state = False
+            aq = self._ctrl_pressure_thread()
+            print "P_Aquire fired, thread started"            
         else:
-            self.Continuous = False
-            self.P_acquire = False
-            self.P_regulate = False
-            print "Aquire fired, thread stopped"
+	    self.P_Acquire_label = 'Start'
+            #self.Continuous = False
+            self.P_Acquire_state = False
+            self.P_regulate_state = False
+            print "P_Aquire fired, thread stopped"
 
     def _SetPressure_default(self):
-        self.data.press_pid = er_pid.pidcontrol()            
+        self.data.P_pid = er_pid.pidcontrol()            
         return 1e-7 
-    def _Regulate_fired(self):
-        if self.P_acquire and not self.P_regulate:
+    def _P_Regulate_fired(self):
+        if self.P_Acquire_state and not self.P_Regulate_state:
             print "Regulate pressure started"
-            self.P_regulate = True
-            #self.data.press_pid = er_pid.pidcontrol()
-            self.data.press_pid.set_P(self.P)
-            self.data.press_pid.set_I(self.I)
-            self.data.press_pid.set_D(self.D)
-            self.data.press_pid.set_ctrl_value(self.SetPressure)
+            self.P_Regulate_state = True
+            self.data.P_pid.set_P(self.P_P)
+            self.data.P_pid.set_I(self.P_I)
+            self.data.P_pid.set_D(self.P_D)
+            self.data.P_pid.set_ctrl_value(self.SetPressure)
         else:
             print "Regulate pressure fired off"
-            self.P_regulate = False
+            self.P_Regulate_state = False
             
-    def _P_changed(self):
-        self.data.press_pid.set_P(self.P)
-    def _I_changed(self):
-        self.data.press_pid.set_I(self.I)
-    def _D_changed(self):
-        self.data.press_pid.set_D(self.D)
+    def _P_P_changed(self):
+        self.data.P_pid.set_P(self.P_P)
+    def _P_I_changed(self):
+        self.data.P_pid.set_I(self.P_I)
+    def _P_D_changed(self):
+        self.data.P_pid.set_D(self.P_D)
     def _SetPressure_changed(self):
-        self.data.press_pid.set_ctrl_value(self.SetPressure)
-        
-    # check thread
-    def inout_data(self):
-        if self.inout_thread and self.inout_thread.isAlive():
-            self.inout_thread.Continuous = False
-            #self.ER.Continuous = False
+        self.data.P_pid.set_ctrl_value(self.SetPressure)
+	
+    def _Pressure_Plot_changed(self):
+	if self.Pressure_Plot:
+	    # create plot object
+	    self.data.P_plot = ER_plot_component(data=self.data)
+	    # define a couple of properties
+	    # close hook
+	    self.data.P_plot.ctrl_object =  self
+	    self.data.P_plot.close_event = "P_event"
+	    # title
+	    self.data.P_plot.plot_title = "Pressure [mBar]"
+	    self.data.P_plot.plot_numpoints = 200
+	    # make it visible
+	    self.data.P_plot.make_plot()
+	    self.data.P_plot.edit_traits(kind="live")	    
+	else:
+	    "send close event"
+	    self.data.P_plot.close = 1
+
+
+    def _P_error_Plot_changed(self):
+	if self.P_error_Plot:
+	    # create plot object
+	    self.data.PE_plot = ER_plot_component(data=self.data)
+	    # define a couple of properties
+	    # close hook
+	    self.data.PE_plot.ctrl_object =  self
+	    self.data.PE_plot.close_event = "PE_event"
+	    # title
+	    self.data.PE_plot.plot_title = "Pressure [mBar]"
+	    self.data.PE_plot.plot_numpoints = 200
+	    # make it visible
+	    self.data.PE_plot.make_plot()
+	    self.data.PE_plot.edit_traits(kind="live")	    
+	else:
+	    "send close event"
+	    self.data.PE_plot.close = 1
+
+    def _P_output_Plot_changed(self):
+	if self.P_output_Plot:
+	    # create plot object
+	    self.data.PO_plot = ER_plot_component(data=self.data)
+	    # define a couple of properties
+	    # close hook
+	    self.data.PO_plot.ctrl_object =  self
+	    self.data.PO_plot.close_event = "PO_event"
+	    # title
+	    self.data.PO_plot.plot_title = "Volt [a.u.]"
+	    self.data.PO_plot.plot_numpoints = 200
+	    # make it visible
+	    self.data.PO_plot.make_plot()
+	    self.data.PO_plot.edit_traits(kind="live")	    
+	else:
+	    "send close event"
+	    self.data.PO_plot.close = 1
+
+    # start/check thread
+    def _ctrl_pressure_thread(self):
+        if self.pressure_thread and self.pressure_thread.isAlive():
+            self.pressure_thread.Continuous = False
+	    pass
         else:
-            self.inout_thread = InOutThread()
-            self.inout_thread.Continuous = self.Continuous
-            self.inout_thread.ER = self
-            self.inout_thread.start()
+            self.pressure_thread = PressureThread()
+            #self.pressure_thread.Continuous = self.Continuous
+            self.pressure_thread.ER = self
+            self.pressure_thread.start()
 
+	    
+    # <========================================================================>
+    # Film
+    def _F_Acquire_fired(self):
+        if not self.F_Acquire_state:
+	    self.F_Acquire_label = 'Stop'
+            self.F_Acquire_state = True
+            self.F_regulate_state = False
+            aq = self._ctrl_film_thread()
+            print "P_Aquire fired, thread started"            
+        else:
+	    self.F_Acquire_label = 'Start'
+            self.F_Acquire_state = False
+            self.F_regulate_state = False
+            print "P_Aquire fired, thread stopped"
 
-class InOutThread(Thread):
-    "Remote operations"
-    def run(self):
-        m_Pressure = 0
-        SetPressure = self.ER.SetPressure
-        
-        while self.ER.P_acquire:
-            sleep(.5)
-            if self.ER.P_acquire:
-                try:
-                    "get Pressure from gauge"
-                    m_Pressure_tmp = self.ER.data.P_Dev.getPM()
-                    # save the data to the data
-		    if m_Pressure_tmp:
-			m_Pressure = m_Pressure_tmp	
-                    	self.ER.Pressure = m_Pressure_tmp
-                    	self.ER.data.set_Pressure(m_Pressure)
-		    #f = open('log_pressure.dat','a')
-		    #f.write(str(m_Pressure))
-	  	    #f.write('\n')
-		    
-		    # for now we get Rate and Thickness also in this thread
-		    self.ER.Rate = self.ER.data.R_Dev.getRate(nm=True)
-		    self.ER.Thickness = self.ER.data.R_Dev.getThickness(nm=True)
-		    
-                except:
-                    print "no Pressure measurement taken"
-                    raise    
-                
-                if self.ER.P_regulate:
-                    # calculate new output value
-                    o_new_val, error = self.ER.data.press_pid.get_correcting_value(m_Pressure)
-		    # scale to reasonable voltages
-		    o_new_val= o_new_val*1e6
-		    
-		    print 'V output value, error', o_new_val, error
-                    if o_new_val>1: o_new_val = 1 
-	 	    if o_new_val<0.0001: o_new_val = 0.05
-                    # the DAQ generates a voltage, the MFC generates a mass flow from this.
-                    self.ER.data.DAQ_Dev.output(0,o_new_val)
-                    # save the error and output
-                    self.ER.data.set_P_error(error)
-                    self.ER.data.set_P_output(o_new_val)
-                    print o_new_val, error
-                    #data.set_pidE(error)
-        #f.close()
-        print "Exit pressure monitor thread"
+    def _SetFilmRate_default(self):
+        self.data.F_R_pid = er_pid.pidcontrol()            
+        return 1e-7 
+    def _F_R_Regulate_fired(self):
+	# film rate 
+        if self.F_Acquire_state and not self.F_R_regulate_state:
+            print "Regulate film rate started"
+            self.F_R_regulate_state = True
+            self.data.F_R_pid.set_P(self.F_P)
+            self.data.F_R_pid.set_I(self.F_I)
+            self.data.F_R_pid.set_D(self.F_D)
+            self.data.F_R_pid.set_ctrl_value(self.SetFilmRate)
+        else:
+            print "Regulate film rate stopped"
+            self.F_regulate_state = False
+            
+    def _F_P_changed(self):
+        self.data.P_pid.set_P(self.P)
+    def _F_I_changed(self):
+        self.data.P_pid.set_I(self.I)
+    def _F_D_changed(self):
+        self.data.P_pid.set_D(self.D)
+    def _SetFilmRate_changed(self):
+        self.data.F_pid.set_ctrl_value(self.SetFilmRate)
+	
+    def _F_T_Plot_changed(self):
+	# film thickness
+	if self.F_T_Plot:
+	    # create plot object
+	    self.data.F_T_plot = ER_plot_component(data=self.data)
+	    # define a couple of properties
+	    # close hook
+	    self.data.F_T_plot.ctrl_object =  self
+	    self.data.F_T_plot.close_event = "F_T_event"
+	    # title
+	    self.data.F_T_plot.plot_title = "Thickness [nm]"
+	    self.data.F_T_plot.plot_numpoints = 200
+	    # make it visible
+	    self.data.F_T_plot.make_plot()
+	    self.data.F_T_plot.edit_traits(kind="live")	    
+	else:
+	    "send close event"
+	    self.data.F_T_plot.close = 1
+    
+    # start/check thread
+    def _ctrl_film_thread(self):
+        if self.film_thread and self.film_thread.isAlive():
+            #self.pressure_thread.Continuous = False
+	    pass
+        else:
+            self.film_thread = FilmThread()
+            #self.pressure_thread.Continuous = self.Continuous
+            self.film_thread.ER = self
+            self.film_thread.start()
+

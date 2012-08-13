@@ -57,8 +57,10 @@ if True:
     except:
         print ("ER: combivac device not loaded, loading dummy.")
         from random import random
+        from math import sin
+        from time import time
         class P_Dev(object):
-            def getPM(self): return random()*1e-5
+            def getPM(self): return 1e-4*sin(time())+random()*1e-5
         data.P_Dev = P_Dev()
         #data.P_Dev.getPM()
     try:
@@ -78,6 +80,8 @@ if True:
         # print 'Thickness:',data.R_Dev.getThickness(nm=True)        
         
 
-    title="EvapoRate v2 HR@KIT/2012"
+    title="EvapoRate v3 HR@KIT/2012"
     ER = EvapoRate(data=data)
+
+    #ER.edit_traits(view='plots_view')
     ER.configure_traits()

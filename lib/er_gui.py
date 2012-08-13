@@ -21,13 +21,20 @@ class EvapoRate(HasTraits):
     er_plots = Instance(ER_plot_component)
     er_state = Instance(ER_State)
     
-    traits_view = View(HSplit(
+    plots_view = View(HSplit(
             Item('er_plots', style='custom',show_label=False,width=0.7),
             Item('er_state',style='custom',show_label=False,label='State'),
         ),
         resizable=True, 
-        height=0.7, width=0.6,
+        height=0.7, width=0.6, x= 0.1, y=0.1,
         title='EvapoRate v2 HR@KIT2012'
+      )
+    
+    traits_view = View(
+        Item('er_state', style='custom',show_label=False),
+        resizable=True, x=-0.01, y=0.05,
+        #height=0.7, width=0.6,
+        title='EvapoRate v3 HR@KIT2012'
       )
 
     def _er_plots_default(self):
