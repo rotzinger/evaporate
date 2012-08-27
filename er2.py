@@ -60,7 +60,7 @@ if True:
         from math import sin
         from time import time
         class P_Dev(object):
-            def getPM(self): return 1e-4*sin(time())+random()*1e-5
+            def getPM(self): return 1.5e-4+1e-4*sin(time())+random()*3e-5
         data.P_Dev = P_Dev()
         #data.P_Dev.getPM()
     try:
