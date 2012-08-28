@@ -21,7 +21,7 @@ class CtrlPlot(HasTraits):
     dev_reading_plot_window_closed = False
     dev_bad_reading = Bool(False)
     disp_unit = Str("")
-    readonly_fmt = "%.2g "
+    readonly_fmt = "%.3g "
     
     view = View(
         HGroup(

@@ -21,9 +21,13 @@ class PressureThread(Thread):
 			m_Pressure = m_Pressure_tmp
 			self.ER.pressure_plot.dev_bad_reading = True
 		    self.ER.pressure_plot.dev_reading = m_Pressure
-		    self.ER.data.set_Pressure(m_Pressure)		    
+		    self.ER.data.set_Pressure(m_Pressure)
+	    except TypeError:
+		print "Pressure: (TypeError) Bad return from device"
+		self.ER.pressure_plot.dev_bad_reading = True
+		continue
 	    except:
-		print "no Pressure measurement taken"
+		print "Pressure: no Pressure measurement taken"
 		raise    
                 
 	    if self.ER.pressure_pid.Regulate_state:
