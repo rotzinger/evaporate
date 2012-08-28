@@ -5,15 +5,21 @@ class PressureThread(Thread):
     "Remote operations"
     def run(self):
         m_Pressure = 0
+	m_Pressure_tmp = 0
         #SetPressure = self.ER.SetPressure
         
         while self.ER.P_Acquire_state:
             sleep(.5)
 	    try:
+		m_Pressure_tmp = m_Pressure
+		self.ER.pressure_plot.dev_bad_reading = False
 		"get Pressure from gauge"
 		m_Pressure = self.ER.data.P_Dev.getPM()
 		# save the data to the data
-		if m_Pressure:	
+		if m_Pressure:
+		    if m_Pressure >1.5*m_Pressure_tmp and m_Pressure_tmp:
+			m_Pressure = m_Pressure_tmp
+			self.ER.pressure_plot.dev_bad_reading = True
 		    self.ER.pressure_plot.dev_reading = m_Pressure
 		    self.ER.data.set_Pressure(m_Pressure)		    
 	    except:

@@ -19,6 +19,7 @@ class CtrlPlot(HasTraits):
     dev_reading = Float(0)
     dev_reading_plot = Bool(False)
     dev_reading_plot_window_closed = False
+    dev_bad_reading = Bool(False)
     disp_unit = Str("")
     readonly_fmt = "%.2g "
     
@@ -28,6 +29,7 @@ class CtrlPlot(HasTraits):
             Item(name='dev_reading',show_label=False, style="readonly",width = 60,format_str=readonly_fmt),
             '_',
             Item(name='disp_unit',show_label=False,style="readonly"),
+            Item(name='dev_bad_reading',label="bad:",style="simple"),
         ),
         handler = SingleStateHandler(),
     )
