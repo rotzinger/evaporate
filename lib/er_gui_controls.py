@@ -51,6 +51,9 @@ class ER_State(HasTraits):
     stop_label = Str("Start")
     stop_event = Event 
     stop_state = Bool(False)
+    stop_reset = Button('Reset')
+    stop_dtime = 0
+    
     
     view = View(
         HGroup(
@@ -107,7 +110,11 @@ class ER_State(HasTraits):
             VGroup(
                 Group(
                     Group(
-                        Item('stop_event', label="start/stop", editor = ButtonEditor(label_value = 'stop_label'))," ",
+                        HGroup(
+                            Item('stop_event', show_label=False, editor = ButtonEditor(label_value = 'stop_label')),
+                            Item('stop_reset', show_label=False)
+                            ),
+                        " ",
                         Item(name='stop_time',style="readonly",label="Time:"),
                         ),
                     label="time",show_border=True,
@@ -264,3 +271,7 @@ class ER_State(HasTraits):
             #self.Continuous = False
             self.stop_state = False
             print "stop time fired, thread stopped"
+	    
+    def _stop_reset_fired(self):
+	self.stop_dtime = 0
+	self.stop_time = ""

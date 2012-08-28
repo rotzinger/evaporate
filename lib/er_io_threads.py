@@ -73,9 +73,13 @@ class StopThread(Thread):
     
     def run(self):
         t  = time()
+	dt = self.ER.stop_dtime
+	t= t-dt
 	ts = ""
         while self.ER.stop_state:
-            sleep(1)
-	    ts = strftime("%Mm %Ss",localtime(time()-t))
+	    dt = time()-t
+	    ts = strftime("%Mm %Ss",localtime(dt))
 	    self.ER.stop_time = ts
+	    sleep(1)
+	self.ER.stop_dtime = dt
     print "Exit Start/Stop time thread"
