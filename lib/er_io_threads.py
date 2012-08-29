@@ -25,6 +25,8 @@ class PressureThread(Thread):
 	    except TypeError:
 		print "Pressure: (TypeError) Bad return from device"
 		self.ER.pressure_plot.dev_bad_reading = True
+		# the next reading should have a valid before
+		m_Pressure = m_Pressure_tmp
 		continue
 	    except:
 		print "Pressure: no Pressure measurement taken"
@@ -38,7 +40,7 @@ class PressureThread(Thread):
 		# scale to reasonable voltages
 		o_new_val= o_new_val*1e3
 		self.ER.P_output_plot.dev_reading = o_new_val
-		print 'V output value:', o_new_val, 'error:', error ,'unscaled output:', o_new_val/1e6 
+		print 'V output value:', o_new_val, 'error:', error ,'unscaled output:', o_new_val/1e3 
 		if o_new_val>1: o_new_val = 1 
 		if o_new_val<0.0001: o_new_val = 0.05
 		# the DAQ generates a voltage, the MFC generates a mass flow from this.
