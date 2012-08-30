@@ -2,7 +2,7 @@
 # 
 import time,sys
 import atexit
-
+import struct
 class Pressure_Dev(object): 
     # in the moment only access to a combivac cm 31
     def __init__(self):
@@ -15,7 +15,7 @@ class Pressure_Dev(object):
         # Port A on the USB_to_serial converter,Port A with C, Port B ends with K
         device = "/dev/tty.usbserial-FTB4J8SK"
 	device = "/dev/tty.usbserial"
-	#device = "/dev/ttyUSB1"
+	device = "/dev/ttyUSB0"
         self.ser = self._std_open(device,baudrate,timeout)
         atexit.register(self.ser.close)
             
@@ -73,27 +73,36 @@ class Pressure_Dev(object):
     def read_in_string(self):
 
         # clear queue first, old data,etc
+	time.sleep(0.05)
         rem_char = self.ser.inWaiting()
+	print rem_char
         if rem_char:
             self.ser.read(rem_char)
-	time.sleep(0.01)
+	rem_char = self.ser.inWaiting()
+	print rem_char
+	time.sleep(0.1)
 	# read back
 	rem_char = self.ser.inWaiting()
 	print rem_char
 	#rem_char = 9
 	value = self.ser.read(rem_char)
-	print rem_char
-	print "#"+value+"#"
-	for i in value: print hex(ord(i))
-	"""
+	value = bytearray(value)
+	#print "index: ",value.find(7)
+	for i,b in enumerate(value):
+		if b==7 and value[i+1] == 5 and i+9<len(value):
+			print "msg starts",i
+			print self._Unpack_Cmd(str(value[i:i+9]))
+	#print "#"+value+"#"
+	#for i in value: print hex(ord(i))
+	
         # everything is okay ?
-        if value[0] <> 7 and value[1] <> 5:
-            print value
+        #if value[0] <> 7 and value[1] <> 5:
+        #    print value
             #for i in value: print hex(ord(i))
  
-        else:
-            return value.strip(self.ack)
-	"""
+        #else:
+        #    return value.strip(self.ack)
+
     def getTM1(self):
 	pass
 
