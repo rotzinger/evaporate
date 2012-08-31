@@ -65,7 +65,7 @@ class Pressure_Dev(object):
 	# calc and add checksum
 	calc_csm = reduce(lambda x,y:x+y, map(ord, binstr)) % 256
 	if calc_csm == csm:
-	    return calc_pressure_from_data(Value_high, Value_low)
+	    return self.calc_pressure_from_data(Value_high, Value_low)
 	else:
 	    print calc_csm, csm
 	    return None
