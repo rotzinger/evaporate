@@ -60,8 +60,8 @@ class Pressure_Dev(object):
         fmt=">9B"
         data_str_len, page_nr, Status, Error, Value_high, Value_low, SW_Version, Sensor_Type, csm = struct.unpack(fmt,data)
 	# check checksum
-	fmt = ">8B"
-	binstr = struct.pack(fmt,data_str_len, page_nr, Status, Error, Value_high, Value_low, SW_Version, Sensor_Type)
+	fmt = ">7B"
+	binstr = struct.pack(fmt, page_nr, Status, Error, Value_high, Value_low, SW_Version, Sensor_Type)
 	# calc and add checksum
 	calc_csm = reduce(lambda x,y:x+y, map(ord, binstr)) % 256
 	if calc_csm == csm:
