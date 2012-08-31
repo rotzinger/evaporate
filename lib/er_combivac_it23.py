@@ -67,6 +67,7 @@ class Pressure_Dev(object):
 	if calc_csm == csm:
 	    return calc_pressure_from_data(Value_high, Value_low)
 	else:
+	    print calc_csm, csm
 	    return None
         #return  data_str_len, page_nr, Status, Error, Value_high, Value_low, SW_Version, Sensor_Type, csm
 
@@ -98,7 +99,7 @@ class Pressure_Dev(object):
 	value = bytearray(value)
 	#print "index: ",value.find(7)
 	for i,b in enumerate(value):
-		if b==7 and value[i+1] == 5 and i+9<len(value):
+		if i+9<len(value) and b==7 and value[i+1] == 5:
 			print "msg starts",i
 			print self._Unpack_Cmd(str(value[i:i+9]))
 	#print "#"+value+"#"
