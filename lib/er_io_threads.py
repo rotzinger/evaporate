@@ -6,6 +6,7 @@ class PressureThread(Thread):
     def run(self):
         m_Pressure = 0
 	m_Pressure_tmp = 0
+	bad_reading_count = 0
         #SetPressure = self.ER.SetPressure
         
         while self.ER.P_Acquire_state:
@@ -17,11 +18,23 @@ class PressureThread(Thread):
 		m_Pressure = self.ER.data.P_Dev.getPM()
 		# save the data to the data
 		if m_Pressure:
+		    # ------------------------
+		    # this section is a hack to go around the penning reading problems.
 		    if m_Pressure >1.5*m_Pressure_tmp and m_Pressure_tmp:
 			m_Pressure = m_Pressure_tmp
 			self.ER.pressure_plot.dev_bad_reading = True
+			bad_reading_count +=1
+			if bad_reading_count == 5:
+			    print "bad reading count reached (5), resetting last value:"
+			    m_Pressure_tmp = m_Pressure
+		    # -------------------------
 		    self.ER.pressure_plot.dev_reading = m_Pressure
 		    self.ER.data.set_Pressure(m_Pressure)
+		    bad_reading_count = 0
+		if m_Pressure == None:
+		    print "Pressure: (None) Bad return from device"
+		    m_Pressure = m_Pressure_tmp
+		    continue		    
 	    except TypeError:
 		print "Pressure: (TypeError) Bad return from device"
 		self.ER.pressure_plot.dev_bad_reading = True
