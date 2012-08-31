@@ -59,7 +59,16 @@ class Pressure_Dev(object):
         "unpack and return data"
         fmt=">9B"
         data_str_len, page_nr, Status, Error, Value_high, Value_low, SW_Version, Sensor_Type, csm = struct.unpack(fmt,data)
-        return  data_str_len, page_nr, Status, Error, Value_high, Value_low, SW_Version, Sensor_Type, csm
+	# check checksum
+	fmt = ">8B"
+	binstr = struct.pack(fmt,data_str_len, page_nr, Status, Error, Value_high, Value_low, SW_Version, Sensor_Type)
+	# calc and add checksum
+	calc_csm = reduce(lambda x,y:x+y, map(ord, bbinstr)) % 256
+	if calc_csm == csm:
+	    return calc_pressure_from_data(Value_high, Value_low)
+	else:
+	    return None
+        #return  data_str_len, page_nr, Status, Error, Value_high, Value_low, SW_Version, Sensor_Type, csm
 
     def calc_pressure_from_data(self,Value_high, Value_low):
 	return 10**((Value_high * 256. + Value_low) / 4000 - 12.5)
