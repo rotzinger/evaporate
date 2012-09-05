@@ -1,10 +1,9 @@
 # Pressure DEV version 0.1 written by HR@KIT 2012
-# 
+# leybold/inficon ionivac + combivac it23 monitor  
 import time,sys
 import atexit
 import struct
 class Pressure_Dev(object): 
-    # in the moment only access to a combivac cm 31
     def __init__(self):
 
         self.ack="\x06"
@@ -18,29 +17,6 @@ class Pressure_Dev(object):
 	device = "/dev/ttyUSB0"
         self.ser = self._std_open(device,baudrate,timeout)
         atexit.register(self.ser.close)
-            
-        # load inficon comands
-        
-    def _Pack_Cmd(self, Command, Value = 0, Type = 0):
-        "_Pack_Cmd formates and returns a proper datagram with Command, Value and Type"
-
-        fmt = ">BBBBi"
-        binout = struct.pack(fmt,
-                             self.address,
-                             Command,
-                             Type,
-                             self.motor,
-                             Value)
-        # calc and add checksum
-        csm = reduce(lambda x,y:x+y, map(ord, binout)) % 256
-        binout+=struct.pack(">B",csm)
-        
-        if self.Debug:
-                print  "_Pack_Cmd datagram \n1\t2\t3\t4\t5\t6\t7\t8\t9"
-                for i in binout:
-                    print hex(ord(i)),"\t",
-                print ""
-        return binout
 
     def _Unpack_Cmd(self,data):
 	
@@ -67,8 +43,10 @@ class Pressure_Dev(object):
 	if calc_csm == csm:
 	    return self.calc_pressure_from_data(Value_high, Value_low)
 	else:
-	    print calc_csm, csm
+	    #print calc_csm, csm
 	    return None
+	
+	# one also has access to the following data ...
         #return  data_str_len, page_nr, Status, Error, Value_high, Value_low, SW_Version, Sensor_Type, csm
 
     def calc_pressure_from_data(self,Value_high, Value_low):
@@ -77,54 +55,51 @@ class Pressure_Dev(object):
     def _std_open(self,device,baudrate,timeout):
         import serial
         # open serial port, 9600, 8,N,1, timeout 0.1
-        #device="/dev/tty.usbserial"
         return serial.Serial(device, baudrate, timeout=timeout)
         
-    def read_in_string(self):
+    def pick_data_from_stream(self):
 
         # clear queue first, old data,etc
-	time.sleep(0.05)
+	#time.sleep(0.05)
         rem_char = self.ser.inWaiting()
-	print rem_char
+	#print rem_char
         if rem_char:
-            self.ser.read(rem_char)
-	rem_char = self.ser.inWaiting()
-	print rem_char
+            self.ser.read(rem_char)	
+	# now the fresh data ....
 	time.sleep(0.1)
 	# read back
 	rem_char = self.ser.inWaiting()
-	print rem_char
-	#rem_char = 9
+	# print rem_char
+	# rem_char = 9
 	value = self.ser.read(rem_char)
+	# converting to a bytearray makes live easier ...
 	value = bytearray(value)
-	#print "index: ",value.find(7)
-	for i,b in enumerate(value):
-		if i+9<len(value) and b==7 and value[i+1] == 5:
-			print "msg starts",i
-			print self._Unpack_Cmd(str(value[i:i+9]))
-	#print "#"+value+"#"
-	#for i in value: print hex(ord(i))
 	
-        # everything is okay ?
-        #if value[0] <> 7 and value[1] <> 5:
-        #    print value
-            #for i in value: print hex(ord(i))
- 
-        #else:
-        #    return value.strip(self.ack)
+	# simply just take the first one captured nine bytes where the 
+	# pattern matches, 
+	# FIXME: the checksum is checked but not reported, 
+	# only "None" is returned in case of a mismatch
+	for i,b in enumerate(value):
+	    if i+9<len(value) and b==7 and value[i+1] == 5:
+		return self._Unpack_Cmd(str(value[i:i+9]))
+
 
     def getTM1(self):
+	# the IONIVAC does not need this call
 	pass
 
     def getTM2(self):
+	# the IONIVAC does not need this call
 	pass
-    def getIVM(self):
-	pass
+    
+    def getUHV(self):
+	"main and only func to be called from outside"
+	return self.pick_data_from_stream()
+    
     def setHV(self,on=True):
+	# not implemented
 	pass
+
 if __name__ == "__main__":
     p1 = Pressure_Dev()
-    p1.read_in_string()
-    #print p1.setHV(on=False)
-    #print "Penning:", p1.getPM()
-    #print "Pirani 1:", p1.getTM1()    
+    p1.pick_data_from_stream()

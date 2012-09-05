@@ -72,7 +72,7 @@ class Pressure_Dev(object):
 		return float(pressure.strip())
     	except:
 		return None
-    def getPM(self):
+    def getUHV(self):
         value = self.remote_cmd("MES R PM1")
         try:
                 gauge,pressure = value.split(" : ")
@@ -87,5 +87,5 @@ class Pressure_Dev(object):
 if __name__ == "__main__":
     p1 = Pressure_Dev()
     #print p1.setHV(on=False)
-    print "Penning:", p1.getPM()
+    print "Penning:", p1.getUHV()
     print "Pirani 1:", p1.getTM1()    

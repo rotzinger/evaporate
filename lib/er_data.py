@@ -5,6 +5,7 @@ from chaco.api import ArrayPlotData
 
 # plot class
 class PLOT_DATA (object):
+    
     debug = False
     
     last_value = 0
@@ -16,12 +17,19 @@ class PLOT_DATA (object):
     x_axis = ""
     y_axis = ""
     title = ""
+    unit = ""
     numpoints = 200
     # window position
     x_pos = 0.1
     y_pos = 0.1
+    # window size
+    x_size = 300
+    y_size = 300    
+    def update_value(self,value):
+	pass
 
 class PID_DATA(object):
+  
     def set_func(self,value):
 	pass
     def get_func(self):
@@ -29,6 +37,7 @@ class PID_DATA(object):
     P = 0
     I = 0
     D = 0
+    input_devices = [] #{} #{0:"Penning",1:"Ionivac"}
     
 class SHUTTER_DATA(object):
     timeout = 3600 # 1h in seconds
@@ -47,18 +56,39 @@ class DATA(object):
         # define operational variables
 	# settings for the
         # Pressure
-        self.PP = PLOT_DATA()
-        #self.PP.P_plot = 0
-        self.PP.values_array = zeros(self.PP.numpoints)
+	# list of Pressure devices
+	self.P_Devs = []	
+	self.PP = [0,0]
 	
-	self.PP.y_axis       = "Pressure [mBar]"
-	self.PP.x_axis       = "time [s]"
-	self.PP.plot_title   = "Pressure (penning)"	
-	self.PP.unit         = "mBar"
-	self.PP.x_pos        = 0.0
-	self.PP.y_pos        = 0.025
+	#penning
+        self.PP[0] = PLOT_DATA()
+        self.PP[0].values_array = zeros(self.PP[0].numpoints)
+	self.PP[0].y_axis       = "Pressure [mBar]"
+	self.PP[0].x_axis       = "time [s]"
+	self.PP[0].plot_title   = "Pressure (penning)"	
+	self.PP[0].unit         = "mBar"
+	self.PP[0].x_pos        = 0.0
+	self.PP[0].y_pos        = 0.025
 	
-        
+		    
+	# register update func
+	self.PP[0].update_value = self.set_Pressure
+	
+	#ionivac
+        self.PP[1] = PLOT_DATA()
+        self.PP[1].values_array = zeros(self.PP[0].numpoints)
+	self.PP[1].y_axis       = "Pressure [mBar]"
+	self.PP[1].x_axis       = "time [s]"
+	self.PP[1].plot_title   = "Pressure (ionivac)"	
+	self.PP[1].unit         = "mBar"
+	self.PP[1].x_pos        = 0.0
+	self.PP[1].y_pos        = 0.025	
+	
+	# define update func
+
+		    
+	# register update func
+	self.PP[1].update_value = self.set_Pressure_1        
         
         # Pressure error
         self.PE = PLOT_DATA()
@@ -106,8 +136,20 @@ class DATA(object):
         
         self.pid = 0
         self.r_dev = 0
-        #self.pressure_array = zeros(1000)
         self.lock = Lock()
+
+	# ----------------------------------------------------
+	self.PID_P = PID_DATA()
+	#self.P_PID.input_devices = {0:"Penning",
+	#                            1:"Ionivac"}
+	self.PID_P.input_devices = ["Penning",
+	                            "Ionivac"]	
+	# self.P_PID.set_func(self,value)
+	# self.P_PID.get_func(self) # unused
+	self.PID_P.P = 0
+	self.PID_P.I = 0
+	self.PID_P.D = 0
+	
 
         
     def get_thickness(self):
@@ -122,13 +164,23 @@ class DATA(object):
         with self.lock:
             self.m_rate = rt
 
+
+    # define update funcs
     def set_Pressure(self,m_Pressure):
-        with self.lock:
-            self.PP.last_value = m_Pressure
-            self.PP.values_array = self._update_array(self.PP.last_value, self.PP.values_array)
-            if self.PP.values_array_pd:
-                self.PP.values_array_pd.set_data("P_data",self.PP.values_array)
-            
+	with self.lock:
+	    self.PP[0].last_value = m_Pressure
+	    self.PP[0].values_array = self._update_array(self.PP[0].last_value, self.PP[0].values_array)
+	    if self.PP[0].values_array_pd:
+		self.PP[0].values_array_pd.set_data("P_data",self.PP[0].values_array)
+    
+    def set_Pressure_1(self,m_Pressure):
+	with self.lock:
+	    self.PP[1].last_value = m_Pressure
+	    self.PP[1].values_array = self._update_array(self.PP[1].last_value, self.PP[1].values_array)
+	    if self.PP[1].values_array_pd:
+		self.PP[1].values_array_pd.set_data("P_data",self.PP[1].values_array)
+
+
     def set_P_error(self,P_error):
         #print "P_error"
         with self.lock:

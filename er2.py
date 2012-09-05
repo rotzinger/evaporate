@@ -51,7 +51,7 @@ if True:
         
     try:    
         import lib.er_combivac as combivac
-        data.P_Dev = combivac.Pressure_Dev()
+        data.P_Devs.append(combivac.Pressure_Dev())
         #print data.P_Dev.setHV(on=False)
         #print data.P_Dev.getPM()        
     except:
@@ -60,9 +60,24 @@ if True:
         from math import sin
         from time import time
         class P_Dev(object):
-            def getPM(self): return 1.5e-4+1e-4*sin(time())+random()*3e-5
-        data.P_Dev = P_Dev()
+            def getUHV(self): return 1.5e-4+1e-4*sin(time())+random()*3e-5
+        data.P_Devs.append(P_Dev())
+        
         #data.P_Dev.getPM()
+    try:    
+        import lib.er_ionivac as ionivac
+        data.P_Devs.append(ionivac.Pressure_Dev())
+        #print data.P_Dev.setHV(on=False)
+        #print data.P_Dev.getPM()        
+    except:
+        print ("ER: ionivac device not loaded, loading dummy.")
+        from random import random
+        from math import sin
+        from time import time
+        class IP_Dev(object):
+            def getUHV(self): return 1.5e-4+1e-4*sin(time())+random()*3e-5
+        #data.IP_Dev = IP_Dev()
+        data.P_Devs.append(IP_Dev())
     try:
         import lib.er_ratedev as ratedev
         data.R_Dev=ratedev.Rate_Dev()

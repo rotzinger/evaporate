@@ -1,5 +1,5 @@
-from traits.api import HasTraits, Instance ,Float,Bool,Range, Button,Event, Str
-from traitsui.api import Item, Group, VGroup, HGroup, View, ButtonEditor, Handler, Label
+from traits.api import HasTraits, Instance ,Float,Bool,Range, Button,Event, Str ,  List
+from traitsui.api import Item, Group, VGroup, HGroup, View, ButtonEditor,EnumEditor, Handler, Label
 from er_gui_plots import ER_plot_component
 import lib.er_pidcontrol as er_pid
 
@@ -57,6 +57,7 @@ class CtrlPlot(HasTraits):
 	    self.ui.dispose()
 
 class CtrlPID(HasTraits):
+
     P = Float(0.1,desc="set P parameter",auto_set=False, enter_set=True)
     I = Float(0.01,desc="set I parameter",auto_set=False, enter_set=True)
     D = Float(0.00,desc="set D parameter",auto_set=False, enter_set=True)
@@ -65,7 +66,9 @@ class CtrlPID(HasTraits):
     ManualOutput = Range(0.0,5.0,0,desc="manually set output",auto_set=False, enter_set=True,mode='text')
     Regulate = Button()
     Regulate_state = Bool(False)
-    
+    #RegulateOn = Enum("Penning","Ionivac")
+    RegulateOn = List()
+    RegulateOn_value = Str()
     view = View(
         VGroup(
             Group(Item(name='ManualOutput'),enabled_when='not Regulate_state',show_border=True),
@@ -73,6 +76,8 @@ class CtrlPID(HasTraits):
             Item(name='P',label='P'),            
             Item(name='I',label='I'),
             Item(name='D',label='D'),
+            " ",
+            Item(name='RegulateOn_value',label = "Regulate on:",editor=EnumEditor(name='RegulateOn')),
             Item(name='Regulate'),
             ),
         #handler = SingleStateHandler(),
@@ -89,7 +94,19 @@ class CtrlPID(HasTraits):
         else:
             print "Regulate pressure fired off"
             self.Regulate_state = False
-	    
+    def _RegulateOn_default(self): 
+	return self.data.PID_P.input_devices
+
+	
+    def _RegulateOn_value_changed(self):
+	what_num = self.data.PID_P.input_devices.index(self.RegulateOn_value)
+	print what_num
+	"""
+        if self.RegulateOn_value == self.data.PID_P.input_devices[0]:
+            print "Moving to totally covered position"
+        if self.RegulateOn_value == self.data.PID_P.input_devices[1]:
+            print "Moving to totally exposed position"
+	"""    
     def _P_changed(self):
 	self.data.P_pid.set_P(self.P)
     def _I_changed(self):

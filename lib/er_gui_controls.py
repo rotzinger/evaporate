@@ -38,10 +38,13 @@ class ER_State(HasTraits):
     pressure_thread = 0
     film_thread = 0
     stop_thread = 0
-    # the references to the ui plot objects    
-    pressure_plot  = Instance(CtrlPlot)
-    P_error_plot   = Instance(CtrlPlot)
-    P_output_plot  = Instance(CtrlPlot)    
+    # the references to the ui plot objects
+    #P_plot = [0,0]
+    #P_plot[0]      = Instance(CtrlPlot)
+    pressure_plot   = Instance(CtrlPlot)
+    P_IV_plot       = Instance(CtrlPlot)
+    P_error_plot    = Instance(CtrlPlot)
+    P_output_plot   = Instance(CtrlPlot)    
     F_thickness_plot = Instance(CtrlPlot)
     F_rate_plot      = Instance(CtrlPlot)
 
@@ -65,9 +68,16 @@ class ER_State(HasTraits):
             Group(
                 Group(
                     Item(name='pressure_plot',style='custom',show_label=False),
+                    #Item(name='P_plot[0]',style='custom',show_label=False),
                     ),
-                label="Pressure",show_border=True,
+                label="Pressure (Penning)",show_border=True,
                 ),
+            Group(
+                Group(
+                    Item(name='P_IV_plot',style='custom',show_label=False),
+                    ),
+                label="Pressure (Ionivac)",show_border=True,
+                ),            
             Group(
                 Group(
                     Item(name='pressure_pid',style='custom',show_label=False),
@@ -144,8 +154,16 @@ class ER_State(HasTraits):
             print "P_Aquire fired, thread stopped"
     
     def _pressure_plot_default(self):
-	pressure_plot = CtrlPlot(p_obj=self.data.PP)
+	pressure_plot = CtrlPlot(p_obj=self.data.PP[0])
 	return pressure_plot
+    """
+    def _P_plot[0]_default(self):
+	pressure_plot = CtrlPlot(p_obj=self.data.PP[0])
+	return pressure_plot    
+    """
+    def _P_IV_plot_default(self):
+	P_IV_plot = CtrlPlot(p_obj=self.data.PP[1])
+	return P_IV_plot
     
     def _P_error_plot_default(self):
 	P_error_plot = CtrlPlot(p_obj=self.data.PE)

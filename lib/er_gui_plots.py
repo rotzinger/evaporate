@@ -35,6 +35,8 @@ class PlotHandler(Handler):
 	# position the windows
 	info.ui.view.x = info.object.p_obj.x_pos
 	info.ui.view.y = info.object.p_obj.y_pos
+	info.ui.view.height = info.object.p_obj.y_size
+	info.ui.view.width  = info.object.p_obj.x_size
 	return True
 
 class ER_plot_component(HasTraits):
@@ -44,7 +46,7 @@ class ER_plot_component(HasTraits):
     #view = View( Group(Item(name='container',editor=ComponentEditor(),show_label=False)))
     view = View( 
         Group(
-            Item(name='plot_ren',editor=ComponentEditor(),show_label=False)
+            Item(name='plot_ren',editor=ComponentEditor(size=(100,100)),show_label=False)
         ),
         handler=PlotHandler(),resizable=True,
     )
