@@ -102,4 +102,4 @@ class Pressure_Dev(object):
 
 if __name__ == "__main__":
     p1 = Pressure_Dev()
-    p1.pick_data_from_stream()
+    print p1.pick_data_from_stream()
