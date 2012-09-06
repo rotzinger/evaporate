@@ -78,6 +78,7 @@ class Pressure_Dev(object):
                 gauge,pressure = value.split(" : ")
                 return float(pressure.strip())
         except:
+		print 'er_combivac exception ...'
                 return None
     def setHV(self,on=True):
         if on:

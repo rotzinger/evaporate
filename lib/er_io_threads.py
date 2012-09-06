@@ -2,16 +2,20 @@ from threading import Thread, Lock
 from time import sleep, time, localtime, strftime
 
 class PressureThread(Thread):
+    
     def check_valid_pressure(self,m_Pressure,m_Pressure_tmp,plo):
 	# -------------------------
 	# this section is a hack to go around the penning reading problems.
 	if m_Pressure >1.5*m_Pressure_tmp and m_Pressure_tmp:
 	    m_Pressure = m_Pressure_tmp
 	    plo.dev_bad_reading = True
+	    return m_Pressure, m_Pressure_tmp
 	    # bad_reading_count +=1
 	    # if bad_reading_count == 5:
 	    #  print "bad reading count reached (5), resetting last value:"
 	    #  m_Pressure_tmp = m_Pressure
+        else:
+            return m_Pressure, m_Pressure_tmp
 	# -------------------------
     def run(self):
 	continue_loop =  False
@@ -22,29 +26,33 @@ class PressureThread(Thread):
 	m_Pressure_tmp = [0.,0.]
 	bad_reading_count = 0
         #SetPressure = self.ER.SetPressure
-        
+        # this is also kindof a hack
+        plot_devs = [self.ER.pressure_plot, 
+                     self.ER.P_IV_plot] 
         while self.ER.P_Acquire_state:
             sleep(.5)
 	    
 	    m_Pressure_tmp[0] = m_Pressure[0]
 	    m_Pressure_tmp[1] = m_Pressure[1]
-	    self.ER.pressure_plot.dev_bad_reading = False
-	    self.ER.P_IV_plot.dev_bad_reading = False
+	    #self.ER.pressure_plot.dev_bad_reading = False
+	    #self.ER.P_IV_plot.dev_bad_reading = False
 	    
 	    "get Pressure from gauges"
 	    # save the data to the data
-	    for i in 0,1: # penning , ionivac
+	    for i in range(2): # penning , ionivac
 		try:
+                    plot_devs[i].dev_bad_reading = False
 		    m_Pressure[i] = self.ER.data.P_Devs[i].getUHV()
 		    if m_Pressure[i]:
-			m_Pressure[i],m_Pressure_tmp[i] = self.check_valid_pressure(m_Pressure[i],m_Pressure_tmp[i],self.ER.pressure_plot)
+			m_Pressure[i],m_Pressure_tmp[i] = self.check_valid_pressure(m_Pressure[i],m_Pressure_tmp[i],plot_devs[i])
 		    else:
 			print "Pressure: (None) Bad return from device", i
 			m_Pressure[i] = m_Pressure_tmp[i]
 			continue_loop =  True
 			
-		except TypeError:
+		except TypeError as e:
 		    print "Pressure: (TypeError) Bad return from device"
+		    print e,i
 		    self.ER.pressure_plot.dev_bad_reading = True
 		    # the next reading should have a valid before
 		    m_Pressure = m_Pressure_tmp
