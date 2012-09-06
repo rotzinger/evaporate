@@ -78,7 +78,7 @@ class PressureThread(Thread):
 	    if self.ER.pressure_pid.Regulate_state:
 		#print "Thread enters regulation ..."
 		# calculate new output value
-		o_new_val, error = self.ER.data.P_pid.get_correcting_value(m_Pressure)
+		o_new_val, error = self.ER.data.P_pid.get_correcting_value(m_Pressure[0])
 		self.ER.P_error_plot.dev_reading = error
 		# scale to reasonable voltages
 		o_new_val= o_new_val*1e3

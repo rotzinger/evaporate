@@ -94,8 +94,11 @@ class Pressure_Dev(object):
     
     def getUHV(self):
 	"main and only func to be called from outside"
-	return self.pick_data_from_stream()
-    
+	data = self.pick_data_from_stream()
+    	if data:
+	     return data
+        else:
+             raise IOError
     def setHV(self,on=True):
 	# not implemented
 	pass

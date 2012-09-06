@@ -67,9 +67,10 @@ if True:
     try:    
         import lib.er_ionivac as ionivac
         data.P_Devs.append(ionivac.Pressure_Dev())
+        data.P_Devs[-1].getUHV()
         #print data.P_Dev.setHV(on=False)
         #print data.P_Dev.getPM()        
-    except:
+    except IOError:
         print ("ER: ionivac device not loaded, loading dummy.")
         from random import random
         from math import sin
@@ -77,7 +78,11 @@ if True:
         class IP_Dev(object):
             def getUHV(self): return 1.5e-4+1e-4*sin(time())+random()*3e-5
         #data.IP_Dev = IP_Dev()
-        data.P_Devs.append(IP_Dev())
+        # puuuh what a bad hack
+	if len(data.P_Devs) == 2:
+	    data.P_Devs[1] = IP_Dev()
+        else:
+            data.P_Devs.append(IP_Dev())
     try:
         import lib.er_ratedev as ratedev
         data.R_Dev=ratedev.Rate_Dev()
