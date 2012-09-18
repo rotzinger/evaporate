@@ -106,7 +106,15 @@ class CtrlPID(HasTraits):
             print "Moving to totally covered position"
         if self.RegulateOn_value == self.data.PID_P.input_devices[1]:
             print "Moving to totally exposed position"
+
 	"""    
+    def _P_default(self):
+        return self.data.PID_P.P
+    def _I_default(self):
+        return self.data.PID_P.I
+    def _D_default(self):
+        return self.data.PID_P.D
+
     def _P_changed(self):
 	self.data.P_pid.set_P(self.P)
     def _I_changed(self):

@@ -44,6 +44,7 @@ class PressureThread(Thread):
                     plot_devs[i].dev_bad_reading = False
 		    m_Pressure[i] = self.ER.data.P_Devs[i].getUHV()
 		    if m_Pressure[i]:
+			#pass
 			m_Pressure[i],m_Pressure_tmp[i] = self.check_valid_pressure(m_Pressure[i],m_Pressure_tmp[i],plot_devs[i])
 		    else:
 			print "Pressure: (None) Bad return from device", i

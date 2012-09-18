@@ -146,8 +146,8 @@ class DATA(object):
 	                            "Ionivac"]	
 	# self.P_PID.set_func(self,value)
 	# self.P_PID.get_func(self) # unused
-	self.PID_P.P = 0
-	self.PID_P.I = 0
+	self.PID_P.P = 4.2
+	self.PID_P.I = 0.076
 	self.PID_P.D = 0
 	
 
