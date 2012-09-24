@@ -133,6 +133,13 @@ class FilmThread(Thread):
 class StopThread(Thread):
     
     def run(self):
+	# change the log status
+	# note that the logger is saving data in any case
+        self.ER.data.PP[0].log.start()
+        self.ER.data.PP[1].log.start()
+        self.ER.data.FR.log.start()
+        self.ER.data.FT.log.start()
+
         t  = time()
 	dt = self.ER.stop_dtime
 	t= t-dt
@@ -143,4 +150,10 @@ class StopThread(Thread):
 	    self.ER.stop_time = ts
 	    sleep(1)
 	self.ER.stop_dtime = dt
+	# stop the log status 
+	self.ER.data.PP[0].log.stop()
+        self.ER.data.PP[1].log.stop()
+	self.ER.data.FR.log.stop()
+	self.ER.data.FT.log.stop()
+
     print "Exit Start/Stop time thread"

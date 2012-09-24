@@ -35,6 +35,7 @@ class logger(object):
     def log(self, value):
         if self.logfile:
             self.logfile.write("%s %s %d\n" %(self.get_now(),str(value),self.stat))
+            self.logfile.flush()
     def start(self):
         self.stat = 1
     def stop(self):
