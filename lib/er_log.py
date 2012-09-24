@@ -13,7 +13,7 @@ class logger(object):
     def get_today(self):
         return time.strftime("%Y%m%d")
     def get_now(self):
-        return str(int(time.time()))
+        return str(int(time.time()*10)/10.)
     
     def createLogDir(self):
         logpath = "logs"+'//'+self.get_today()
