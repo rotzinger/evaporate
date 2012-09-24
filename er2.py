@@ -1,8 +1,4 @@
-
-#from numpy import arange,delete,append, zeros
-# Enthought library imports
-#from time import sleep
-#from threading import Thread, Lock
+#/usr/bin/env python
 
 #if __name__ == '__main__':
 if True:
@@ -10,11 +6,6 @@ if True:
     from lib.er_data import DATA 
     data = DATA()
     
-    # create permanent pid object
-    #import lib.er_pidcontrol as er_pid
-    #data.press_pid = er_pid.pidcontrol()
-    # gui
-
     from lib.er_gui_controls import ER_State
     ER_State.data = data
     from lib.er_gui_plots import ER_plot_component

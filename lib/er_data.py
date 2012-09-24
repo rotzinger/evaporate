@@ -1,7 +1,7 @@
 from numpy import arange,delete,append, zeros
 from threading import Thread, Lock
 from chaco.api import ArrayPlotData
-
+from er_log import logger
 
 # plot class
 class PLOT_DATA (object):
@@ -24,7 +24,10 @@ class PLOT_DATA (object):
     y_pos = 0.1
     # window size
     x_size = 300
-    y_size = 300    
+    y_size = 300
+    
+    log = 0
+    
     def update_value(self,value):
 	pass
 
@@ -47,6 +50,7 @@ class SHUTTER_DATA(object):
 	pass
     def close_func(self):
 	pass
+    
 # data share
 class DATA(object):
     "data object"    
@@ -74,6 +78,9 @@ class DATA(object):
 	# register update func
 	self.PP[0].update_value = self.set_Pressure
 	
+	# attach logger
+	self.PP[0].log = logger("penning")
+	
 	#ionivac
         self.PP[1] = PLOT_DATA()
         self.PP[1].values_array = zeros(self.PP[0].numpoints)
@@ -85,11 +92,13 @@ class DATA(object):
 	self.PP[1].y_pos        = 0.025	
 	
 	# define update func
-
-		    
+ 
 	# register update func
-	self.PP[1].update_value = self.set_Pressure_1        
-        
+	self.PP[1].update_value = self.set_Pressure_1
+	
+	# attach logger
+        self.PP[1].log = logger("ionivac")
+	
         # Pressure error
         self.PE = PLOT_DATA()
         self.PE.values_array = zeros(self.PE.numpoints)
@@ -112,7 +121,7 @@ class DATA(object):
 	self.PO.y_pos        = 0.025
 
     
-        # Pressure correcting output
+        # rate 
         self.FR = PLOT_DATA()
         self.FR.values_array = zeros(self.FR.numpoints)        
 	self.FR.x_axis       = "time [s]"
@@ -122,8 +131,10 @@ class DATA(object):
 	self.FR.x_pos        = 0.28
 	self.FR.y_pos        = 0.5
 	
+	# attach logger
+        self.FR.log = logger("rate")	
         
-        # Pressure correcting output
+        # Thickness
         self.FT = PLOT_DATA()
         self.FT.values_array = zeros(self.FT.numpoints)        
 	self.FT.x_axis       = "time [s]"
@@ -133,6 +144,8 @@ class DATA(object):
 	self.FT.x_pos        = 0.56
 	self.FT.y_pos        = 0.5
 	
+	# attach logger
+        self.FT.log = logger("thickness")	
         
         self.pid = 0
         self.r_dev = 0

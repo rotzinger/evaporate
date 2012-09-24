@@ -61,12 +61,14 @@ class PressureThread(Thread):
 		except:
 		    print "Pressure: no Pressure measurement taken"
 		    raise		
-		    
+	    # penning
 	    self.ER.pressure_plot.dev_reading = m_Pressure[0]
 	    self.ER.data.PP[0].update_value(m_Pressure[0])
-	    
+	    self.ER.data.PP[0].log.log(m_Pressure[0])
+	    # ionivac
 	    self.ER.P_IV_plot.dev_reading = m_Pressure[1]
 	    self.ER.data.PP[1].update_value(m_Pressure[1])
+	    self.ER.data.PP[1].log.log(m_Pressure[1])
 	    
 	    bad_reading_count = 0		
 
@@ -114,10 +116,13 @@ class FilmThread(Thread):
 		#self.ER.F_T = self.ER.data.R_Dev.getThickness(nm=True)
 		m_Thickness = self.ER.data.R_Dev.getThickness(nm=True)
 		self.ER.F_thickness_plot.dev_reading = m_Thickness
-		self.ER.data.set_F_thickness(m_Rate)
+		self.ER.data.set_F_thickness(m_Thickness)
+		self.ER.data.FT.log.log(m_Thickness)
+		
 		m_Rate = self.ER.data.R_Dev.getRate(nm=True)
 		self.ER.F_rate_plot.dev_reading = m_Rate
 		self.ER.data.set_F_rate(m_Rate)
+		self.ER.data.FR.log.log(m_Rate)
 	    except:
 		print "no Film measurement taken"
 		raise    
