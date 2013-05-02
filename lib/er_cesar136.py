@@ -4,7 +4,6 @@
 
 import time,sys
 import atexit
-#import struct
 import serial
 
 class Cesar136_Dev(object):
@@ -15,8 +14,8 @@ class Cesar136_Dev(object):
         baudrate = 9600
         timeout = 0.1
         # Port A on the USB_to_serial converter, Port B ends with K
-        device = "/dev/cu.usbserial-FTK3DEL5A"
-        #device = "/dev/ttyUSB0" 
+        #device = "/dev/cu.usbserial-FTK3DEL5A"
+        device = "/dev/ttyUSB0" 
         self.ser = self._std_open(device,baudrate,timeout)
         atexit.register(self.ser.close)
         
@@ -24,6 +23,7 @@ class Cesar136_Dev(object):
         return serial.Serial(device, baudrate, timeout=timeout)
                 
     def remote_cmd(self,cmd):
+	cmd+='\n'
         self.ser.write(cmd)
         
         time.sleep(0.1)    #wait 0.1s
@@ -37,9 +37,9 @@ class Cesar136_Dev(object):
        
     #commands and settings
     
-    def setEchoModeOn(self,state):
+    def setEchoModeOn(self):
         return self.remote_cmd("SECHO 1")
-    def setEchoModeOff(self,state):
+    def setEchoModeOff(self):
         return self.remote_cmd("SECHO 0")
        
     def setRemoteControlOff(self):
@@ -78,10 +78,16 @@ class Cesar136_Dev(object):
         
 
 if __name__ == "__main__":   #if executed as main (and not imported)
-    
+    time.sleep(1) 
     rd = Cesar136_Dev()
 
-    print "Setting Echo Mode On",rd.EchoModeOn()
+    print "Setting Echo Mode On",rd.setEchoModeOn()
     print "Setting Remote Control On",rd.setRemoteControlOn()
-    print "Status:\n",rd.getStatus()
+    print "Status:",rd.getStatus()
+
     
+    print "Setting RF on:", rd.setRFOn()
+    print "waiting 5s...",time.sleep(5)
+    print "Setting RF on:", rd.setRFOff()
+    print "Setting LOCAL Mode",rd.setRemoteControlOff()
+ 
