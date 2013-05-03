@@ -1,6 +1,6 @@
 # control script for Ar clean using Cesar136 version 0.2 written by JB@KIT 05/2013
 
-import sys
+import os,sys
 sys.path.append('../lib')
 from er_cesar136 import Cesar136_Dev
 
@@ -8,7 +8,7 @@ import time,sys
 import atexit
 #import struct
 import serial
-import os
+#import os
         
 
 if __name__ == "__main__":   #if executed as main (and not imported)
@@ -34,9 +34,9 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     
     #settings
     print "Mode: ",ar_cl.setOperationMode(0,100,0)   #P_fwd = 100W
-    time.sleep(10)
+    time.sleep(1)
     print "Matches: ",ar_cl.setMatches(375,580)      #capacities
-    time.sleep(5)
+    time.sleep(10)
     ar_cl.setMatches(375,580)
     time.sleep(5)
     
