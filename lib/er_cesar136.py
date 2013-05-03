@@ -26,7 +26,7 @@ class Cesar136_Dev(object):
 	cmd+='\n'
         self.ser.write(cmd)
         
-        time.sleep(0.1)    #wait 0.1s
+        time.sleep(0.5)    #wait 0.1s
         #value = self.ser.readline().strip("\x06")
         rem_char = self.ser.inWaiting()
         
