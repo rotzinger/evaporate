@@ -1,6 +1,8 @@
-# control script for Ar clean using Cesar136 version 0.1 written by JB@KIT 05/2013
+# control script for Ar clean using Cesar136 version 0.2 written by JB@KIT 05/2013
 
-from lib.er_cesar136 import Cesar136_Dev
+import sys
+sys.path.append('../lib')
+from er_cesar136 import Cesar136_Dev
 
 import time,sys
 import atexit
@@ -13,13 +15,14 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     
     time.sleep(1)
     
-    log_file = open("log" + str(time.localtime()[2]) + str(time.localtime()[1]) + str(time.localtime()[0]) + ".txt",'w')   #create log file
+    path = "../logs/log" + str(time.localtime()[2]) + str(time.localtime()[1]) + str(time.localtime()[0]) + ".txt"
+    log_file = open(path,'w')   #create log file
     log_file.close()
-    print "Log-File in ",os.getcwd()
+    print "Log-File in /logs"
     
     ar_cl = Cesar136_Dev()   #Ar clean
-    ar_cl.setEchoModeOn()
-    print "Setting Echo Mode On"
+    ar_cl.setEchoModeOff()
+    print "Setting Echo Mode Off"
     ar_cl.setRemoteControlOn()
     print "Setting Remote Control On"
     ar_cl.setPulseMode(0,0,0)
@@ -30,19 +33,19 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     # start operation routine
     
     #settings
-    print "Mode: ",ar_cl.setOperationMode(0,20,0)   #P_fwd = 100W
-    time.sleep(1)
-    #print "Matches: ",ar_cl.setMatches(375,580)      #capacities
-    #time.sleep(10)
-    #ar_cl.setMatches(375,580)
-    #time.sleep(5)
+    print "Mode: ",ar_cl.setOperationMode(0,100,0)   #P_fwd = 100W
+    time.sleep(10)
+    print "Matches: ",ar_cl.setMatches(375,580)      #capacities
+    time.sleep(5)
+    ar_cl.setMatches(375,580)
+    time.sleep(5)
     
-    log_file = open("log" + str(time.localtime()[2]) + str(time.localtime()[1]) + str(time.localtime()[0]) + ".txt",'a')
+    log_file = open(path,'a')
     log_file.write(str(time.localtime()[3]) + ":" + str(time.localtime()[4]) + "   " + ar_cl.getStatus() + "\n")
     
     print "Status:\n",ar_cl.getStatus()
     time.sleep(1)
-    a = raw_input("Press Enter to start process")
+    a = raw_input("Press Enter to start process.")
     
     #commands
     
@@ -55,7 +58,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
         slc = 0
         while slc < 3:#10:   #wait 5min
             time.sleep(3)#30)
-            log_file.write(str(time.localtime()[3]) + ":" + str(time.localtime()[4]) + "   " + "RF Power: " + ar_cl.getStatus().splitlines()[1].split()[1]  + "\n")
+            log_file.write(str(time.localtime()[3]) + ":" + str(time.localtime()[4]) + "   " + "RF Power: " + ar_cl.getPrefl() + "\n")
             if False:#int(ar_cl.getStatus().splitlines()[2].split()[1]) > 10:
                 print time.localtime()[3],":",time.localtime()[4]," Reflected Power too high! Process aborted."
                 log_file.write(str(time.localtime()[3]) + ":" + str(time.localtime()[4]) + "   " + "Process aborted, Prefl: " + ar_cl.getStatus().splitlines()[1].split()[1]  + "\n")
