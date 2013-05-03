@@ -85,9 +85,8 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     print "Setting Remote Control On",rd.setRemoteControlOn()
     print "Status:",rd.getStatus()
 
-    
     print "Setting RF on:", rd.setRFOn()
     print "waiting 5s...",time.sleep(5)
-    print "Setting RF on:", rd.setRFOff()
+    print "Setting RF off:", rd.setRFOff()
     print "Setting LOCAL Mode",rd.setRemoteControlOff()
  
