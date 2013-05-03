@@ -32,7 +32,7 @@ class Cesar136_Dev(object):
         
         value = self.ser.read(rem_char) # .strip("\x06")
         #print "##"+value+"##"+value.strip()+"###"
-        return value #value.strip()
+        return value #.strip()
     
        
     #commands and settings
@@ -81,10 +81,14 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     time.sleep(1) 
     rd = Cesar136_Dev()
 
-    print "Setting Echo Mode On",rd.setEchoModeOn()
+    #print "Setting Echo Mode On",rd.setEchoModeOn()
+    print "Setting Echo Mode Off",rd.setEchoModeOff()
     print "Setting Remote Control On",rd.setRemoteControlOn()
-    print "Status:",rd.getStatus()
-
+    print "Status:"
+    return_val = rd.getStatus()
+    ret_val_split = return_val.split()
+    for i in str(return_val): print "#",i,"#", hex(str(i))
+    print len(return_val), return_val.split()
     print "Setting RF on:", rd.setRFOn()
     print "waiting 5s...",time.sleep(5)
     print "Setting RF off:", rd.setRFOff()
