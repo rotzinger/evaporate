@@ -76,13 +76,13 @@ class Cesar136_Dev(object):
         return self.remote_cmd("GST")
     def getPforw(self):
         self.setEchoModeOff()
-        return self.getStatus().slpit()[0]
+        return self.getStatus().split()[1]
     def getPrefl(self):
         self.setEchoModeOff()
-        return self.getStatus().slpit()[1]
+        return self.getStatus().split()[2]
     def getBias(self):
         self.setEchoModeOff()
-        return self.getStatus().slpit()[2]
+        return self.getStatus().split()[3]
         
         
 
