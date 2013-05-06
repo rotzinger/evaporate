@@ -65,7 +65,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     while count < 30:   #30 x 4min = 2hours
 
         ar_cl.setRFOn()   #switch on
-        print time.localtime()[3],":",time.localtime()[4]," RF Power On "
+        print time.strftime("%H:%M:%S")," RF Power On"
         ar_cl.setMatchingAuto(c1,c2)
         log_file.write(str(time.strftime("%H:%M:%S")) + "   " + "RF Power On\n")
         
