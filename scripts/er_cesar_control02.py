@@ -12,7 +12,7 @@ import serial
         
         
 def writeStatusInLogFile():
-    log_file.write(str(time.strftime("%H:%M:%S"))+ "   " + "Pfwd: " + ar_cl.getPfwd() + "   Prefl: " + ar_cl.getPrefl + "   Ubias: " + ar_cl.getBias() + "   C1: " + ar_cl.getC1 + "   C2: " + ar_cl.getC2() + "\n")
+    log_file.write(str(time.strftime("%H:%M:%S"))+ "   " + "Pfwd: " + str(ar_cl.getPfwd()) + "   Prefl: " + str(ar_cl.getPrefl) + "   Ubias: " + str(ar_cl.getBias()) + "   C1: " + str(ar_cl.getC1) + "   C2: " + str(ar_cl.getC2()) + "\n")
     return;
         
 
@@ -20,7 +20,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     
     time.sleep(1)
     
-    path = "../logs/log" + str(time.strftime("%d/%m/%y")) + "_" + str(time.strftime("%H:%M:%S")) + ".txt"
+    path = "../logs/log" + str(time.strftime("%d%m%y")) + "_" + str(time.strftime("%H%M%S")) + ".txt"
     log_file = open(path,'w')   #create log file
     log_file.close()
     print "Log-File in /logs: ",path
@@ -39,8 +39,8 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     
     #settings
     
-    c1 = 375
-    c2 = 625
+    c1 = 355
+    c2 = 605
     
     ar_cl.setOperationMode(0,100,0)
     print "Pfwd: 100W"   #P_fwd = 100W

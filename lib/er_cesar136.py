@@ -74,7 +74,7 @@ class Cesar136_Dev(object):
     
     def getStatus(self):
         return self.remote_cmd("GST")
-    def getPforw(self):
+    def getPfwd(self):
         self.setEchoModeOff()
         return self.getStatus().split()[1]
     def getPrefl(self):

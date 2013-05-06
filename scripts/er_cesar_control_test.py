@@ -12,8 +12,8 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     
     time.sleep(1)
     ar_cl = Cesar136_Dev()   #Ar clean
-    ar_cl.setEchoModeOn()
-    print "Setting Echo Mode On"
+    ar_cl.setEchoModeOff()
+    print "Setting Echo Mode Off"
     ar_cl.setRemoteControlOn()
     print "Setting Remote Control On"
     ar_cl.setPulseMode(0,0,0)
@@ -27,11 +27,15 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     print "Mode: ",ar_cl.setOperationMode(0,100,0)   #P_fwd = 100W
     print "Matches: ",ar_cl.setMatches(375,580)      #capacities
     
-    time.sleep(10)
+    time.sleep(15)
     ar_cl.setMatches(375,580)
     time.sleep(10)
     
     a = raw_input("Any key to start process")
+    #ar_cl.setRemoteControlOff()
+    #time.sleep(5)
+    #ar_cl.setRemoteControlOn()
+    
 
     print "Status:\n",ar_cl.getStatus()
     time.sleep(5)
