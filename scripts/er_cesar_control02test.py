@@ -2,7 +2,7 @@
 
 import os,sys
 sys.path.append('../lib')
-from er_cesar136 import Cesar136_Dev
+#from er_cesar136 import Cesar136_Dev
 
 import time,sys
 import atexit
@@ -13,6 +13,7 @@ import serial
         
 def writeStatusInLogFile():
     log_file.write(str(time.strftime("%H:%M:%S"))+ "   " + "Pfwd: " + str(ar_cl.getPfwd()) + "   Prefl: " + str(ar_cl.getPrefl()) + "   Ubias: " + str(ar_cl.getBias()) + "   C1: " + str(ar_cl.getC1()) + "   C2: " + str(ar_cl.getC2()) + "\n")
+    print "Write Status"
     return;
         
 
@@ -20,19 +21,19 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     
     time.sleep(1)
     
-    path = "../logs/log" + str(time.strftime("%d%m%y")) + "_" + str(time.strftime("%H%M%S")) + ".txt"
+    path = "log" + str(time.strftime("%d%m%y")) + "_" + str(time.strftime("%H%M%S")) + ".txt"
     log_file = open(path,'w')   #create log file
     log_file.close()
     print "Log-File in /logs: ",path
     
-    ar_cl = Cesar136_Dev()   #Ar clean
-    ar_cl.setEchoModeOff()
+    #ar_cl = Cesar136_Dev()   #Ar clean
+    #ar_cl.setEchoModeOff()
     print "Setting Echo Mode Off"
-    ar_cl.setRemoteControlOn()
+    #ar_cl.setRemoteControlOn()
     print "Setting Remote Control On"
-    ar_cl.setPulseMode(0,0,0)
+    #ar_cl.setPulseMode(0,0,0)
     print "Pulse Mode Off"
-    ar_cl.setICPMode(0,0,0,0,0,0) 
+    #ar_cl.setICPMode(0,0,0,0,0,0) 
     print "ICP Mode Off"
     
     # start operation routine
@@ -42,19 +43,19 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     c1 = 355
     c2 = 605
     
-    ar_cl.setOperationMode(0,100,0)
+    #ar_cl.setOperationMode(0,100,0)
     print "Pfwd: 100W"   #P_fwd = 100W
     time.sleep(0.1)
-    ar_cl.setMatches(c1,c2) 
+    #ar_cl.setMatches(c1,c2) 
     print "Matches: ",c1,",",c2    #capacities
     time.sleep(10)
-    ar_cl.setMatches(c1,c2)
+    #ar_cl.setMatches(c1,c2)
     time.sleep(5)
     
     log_file = open(path,'a')
-    log_file.write(str(time.strftime("%H:%M:%S")) + "Status:   " + ar_cl.getStatus() + "\n")
+    #log_file.write(str(time.strftime("%H:%M:%S")) + "Status:   " + ar_cl.getStatus() + "\n")
     
-    print "Status:\n",ar_cl.getStatus()
+    #print "Status:\n",ar_cl.getStatus()
     time.sleep(0.1)
     #print ar_cl.getPrefl()
     a = raw_input("Press Enter to start process.")
@@ -65,16 +66,16 @@ if __name__ == "__main__":   #if executed as main (and not imported)
         count = 0
         while count < 30:   #30 x 4min = 2hours
     
-            ar_cl.setRFOn()   #switch on
+            #ar_cl.setRFOn()   #switch on
             print time.strftime("%H:%M:%S")," RF Power On"
-            ar_cl.setMatchingAuto(c1,c2)
+            #ar_cl.setMatchingAuto(c1,c2)
             log_file.write(str(time.strftime("%H:%M:%S")) + "   " + "RF Power On\n")
             
             slc = 0
             while slc < 10:   #wait 2min
                 time.sleep(12)
                 writeStatusInLogFile()
-                if int(ar_cl.getPrefl()) > 15:   #if reflected power too high
+                if 5 > 15:   #if reflected power too high
                     print time.strftime("%H:%M:%S"), "Reflected Power too high! Process aborted."
                     writeStatusInLogFile()
                     log_file.write("Process aborted.\n")
@@ -82,7 +83,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
                     break
    	        slc = slc + 1
                     
-            ar_cl.setRFOff()   #switch off
+            #ar_cl.setRFOff()   #switch off
             print time.strftime("%H:%M:%S")," RF Power Off"
             log_file.write(str(time.strftime("%H:%M:%S")) + "   " + "RF Power Off\n")
             
@@ -92,15 +93,15 @@ if __name__ == "__main__":   #if executed as main (and not imported)
             count = count + 1
     
     except:
-        ar_cl.setRFOff()   #switch off
-        print time.strftime("%H:%M:%S")," RF Power Off"
+        #ar_cl.setRFOff()   #switch off
+        print time.strftime("%H:%M:%S")," Exception: RF Power Off"
         log_file.write(str(time.strftime("%H:%M:%S")) + "   " + "RF Power Off\n")
     
     # end operation routine
     
     time.sleep(0.1)
-    print "Status:\n",ar_cl.getStatus()
+    #print "Status:\n",ar_cl.getStatus()
     log_file.close()
 
-    ar_cl.setRemoteControlOff()
+    #ar_cl.setRemoteControlOff()
     print "Setting Remote Control Off"
