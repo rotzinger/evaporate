@@ -91,9 +91,9 @@ if __name__ == "__main__":   #if executed as main (and not imported)
                 
             count = count + 1
     
-    except:
+    except Exception as detail:
         ar_cl.setRFOff()   #switch off
-        print time.strftime("%H:%M:%S")," RF Power Off"
+        print time.strftime("%H:%M:%S")," RF Power Off due to   ",detail
         log_file.write(str(time.strftime("%H:%M:%S")) + "   " + "RF Power Off\n")
     
     # end operation routine
