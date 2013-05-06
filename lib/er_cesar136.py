@@ -83,6 +83,12 @@ class Cesar136_Dev(object):
     def getBias(self):
         self.setEchoModeOff()
         return self.getStatus().split()[3]
+    def getC1(self):
+        self.setEchoModeOff()
+        return self.getStatus().split()[4]
+    def getC2(self):
+        self.setEchoModeOff()
+        return self.getStatus().split()[5]
         
         
 
