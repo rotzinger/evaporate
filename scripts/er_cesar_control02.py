@@ -70,16 +70,22 @@ if __name__ == "__main__":   #if executed as main (and not imported)
             ar_cl.setMatchingAuto(c1,c2)
             log_file.write(str(time.strftime("%H:%M:%S")) + "   " + "RF Power On\n")
             
+            refl = 0
             slc = 0
             while slc < 10:   #wait 2min
-                time.sleep(12)
+                time.sleep(10)
                 writeStatusInLogFile()
-                if int(ar_cl.getPrefl()) > 15:   #if reflected power too high
-                    print time.strftime("%H:%M:%S"), "Reflected Power too high! Process aborted."
-                    writeStatusInLogFile()
-                    log_file.write("Process aborted.\n")
-                    count = 30
-                    break
+                print "."
+                
+                refl = refl + ar_cl.getPrefl()
+                if slc % 3 == 2:                     #every three iterations
+                    if refl/3 > 20:   #if reflected power too high
+                        print time.strftime("%H:%M:%S"), "Reflected Power too high! Process aborted."
+                        writeStatusInLogFile()
+                        log_file.write("Process aborted.\n")
+                        count = 30
+                        break
+                    refl = 0
    	        slc = slc + 1
                     
             ar_cl.setRFOff()   #switch off
