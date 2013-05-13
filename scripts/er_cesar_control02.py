@@ -12,7 +12,11 @@ import serial
         
         
 def writeStatusInLogFile():
-    log_file.write(str(time.strftime("%H:%M:%S"))+ "   " + "Pfwd: " + str(ar_cl.getPfwd()) + "   Prefl: " + str(ar_cl.getPrefl()) + "   Ubias: " + str(ar_cl.getBias()) + "   C1: " + str(ar_cl.getC1()) + "   C2: " + str(ar_cl.getC2()) + "\n")
+    try:
+        log_file.write(str(time.strftime("%H:%M:%S"))+ "   " + "Pfwd: " + str(ar_cl.getPfwd()) + "   Prefl: " + str(ar_cl.getPrefl()) + "   Ubias: " + str(ar_cl.getBias()) + "   C1: " + str(ar_cl.getC1()) + "   C2: " + str(ar_cl.getC2()) + "\n")
+    except Exception as detail:
+        print "Write error - ignore"
+        log_file.write("Write error - ignore") 
     return;
         
 
@@ -62,22 +66,26 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     #commands
     
     try:
+        #ar_cl.setMatchingAuto(c1,c2)
         count = 0
         while count < 30:   #30 x 4min = 2hours
     
             ar_cl.setRFOn()   #switch on
             print time.strftime("%H:%M:%S")," RF Power On"
-            ar_cl.setMatchingAuto(c1,c2)
             log_file.write(str(time.strftime("%H:%M:%S")) + "   " + "RF Power On\n")
             
             refl = 0
             slc = 0
             while slc < 10:   #wait 2min
-                time.sleep(10)
+                time.sleep(6)
                 writeStatusInLogFile()
-                print "."
+                #print "."
                 
-                refl = refl + ar_cl.getPrefl()
+                try:
+                    refl = refl + ar_cl.getPrefl()
+                except:
+                    print "Error reading out Prefl - ignore"
+                    
                 if slc % 3 == 2:                     #every three iterations
                     if refl/3 > 20:   #if reflected power too high
                         print time.strftime("%H:%M:%S"), "Reflected Power too high! Process aborted."
