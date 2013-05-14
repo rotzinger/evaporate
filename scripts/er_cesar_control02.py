@@ -71,18 +71,19 @@ if __name__ == "__main__":   #if executed as main (and not imported)
         while count < 30:   #30 x 4min = 2hours
     
             ar_cl.setRFOn()   #switch on
+            tOn = int(time.strftime("%M%S"))   #save current time
             print time.strftime("%H:%M:%S")," RF Power On"
             log_file.write(str(time.strftime("%H:%M:%S")) + "   " + "RF Power On\n")
             
             refl = 0
             slc = 0
-            while slc < 10:   #wait 2min
-                time.sleep(6)
+            
+            while int(time.strftime("%M%S")) - tOn < 188:   #wait 2min
+                time.sleep(8)
                 writeStatusInLogFile()
-                #print "."
-                
+            
                 try:
-                    refl = refl + ar_cl.getPrefl()
+                    refl = refl + int(ar_cl.getPrefl())
                 except:
                     print "Error reading out Prefl - ignore"
                     
@@ -94,8 +95,10 @@ if __name__ == "__main__":   #if executed as main (and not imported)
                         count = 30
                         break
                     refl = 0
-   	        slc = slc + 1
                     
+   	        slc = slc + 1
+               
+            time.sleep(200 - int(time.strftime("%M%S")) - tOn)     #make 2 min full
             ar_cl.setRFOff()   #switch off
             print time.strftime("%H:%M:%S")," RF Power Off"
             log_file.write(str(time.strftime("%H:%M:%S")) + "   " + "RF Power Off\n")
