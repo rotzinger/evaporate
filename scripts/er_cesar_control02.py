@@ -1,4 +1,4 @@
-# control script for Ar clean using Cesar136 version 0.2 written by JB@KIT 05/2013 
+# control script for Ar clean using Cesar136 version 1.0 written by JB@KIT 05/2013 
 
 import os,sys
 sys.path.append('../lib')
