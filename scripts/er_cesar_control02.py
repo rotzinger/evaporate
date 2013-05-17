@@ -11,8 +11,11 @@ import serial
 #import os
     
     
-w_err = 0
+w_err = 0 
         
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
 def writeStatusInLogFile():
     global w_err
     try:
@@ -26,6 +29,9 @@ def writeStatusInLogFile():
             raise IndexError
     return;
         
+        
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 
 if __name__ == "__main__":   #if executed as main (and not imported)
     
@@ -48,12 +54,16 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     
     # start operation routine
     
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #settings
     
     c1 = 355
     c2 = 605
     
     tot_time = 160   #total clean time in minutes
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
     ar_cl.setOperationMode(0,100,0)
     print "Pfwd: 100W"   #P_fwd = 100W
@@ -72,6 +82,8 @@ if __name__ == "__main__":   #if executed as main (and not imported)
    
     a = raw_input("Press Enter to start process.")
     
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #commands
     
     try:
@@ -86,11 +98,12 @@ if __name__ == "__main__":   #if executed as main (and not imported)
             refl = 0
             slc = 0
             
-            tOff = int(str((int(time.strftime("%H")) + (int(time.strftime("%M"))+2)/60)%24) + str((int(time.strftime("%M"))+2)%60).zfill(2) + str(time.strftime("%S")))   #save time when to switch off plasma
+            tOff = int(str(int(time.strftime("%d"))+(int(time.strftime("%H")) + (int(time.strftime("%M"))+2)/60)/24) + str((int(time.strftime("%H")) + (int(time.strftime("%M"))+2)/60)%24) + str((int(time.strftime("%M"))+2)%60).zfill(2) + str(time.strftime("%S")))   #save time when to switch off plasma
+            #                      day             +                   (hour  +   (min+2)/60)/24                                                (hour  +  (min+2)/60)%24                                        (min+2)%60                                       sec
             #print tOff
             
             err = 0
-            while int(time.strftime("%H%M%S")) < tOff - 10:   #wait 2min
+            while int(time.strftime("%d%H%M%S")) < tOff - 10:   #wait 2min
                 time.sleep(8)
                 writeStatusInLogFile()
             
@@ -113,17 +126,19 @@ if __name__ == "__main__":   #if executed as main (and not imported)
                     
    	        slc = slc + 1
                
-            if tOff - int(time.strftime("%H%M%S")) < 12:
+            if tOff - int(time.strftime("%d%H%M%S")) < 12:
                 time.sleep(tOff - int(time.strftime("%H%M%S")))     #make 2 min full
             else:
-                time.sleep(5)   #catch exception (possibly occuring at midnight -> do not clean at midnight)
+                time.sleep(5)   #catch exception (possibly occuring at midnight and month change -> do not clean at these times...)
                 
             ar_cl.setRFOff()   #switch off
             print time.strftime("%H:%M:%S")," RF Power Off"
             log_file.write(str(time.strftime("%H:%M:%S")) + "   " + "RF Power Off\n")
             
             if count < int(tot_time) / 4:
+                #ar_cl.setRemoteControlOff()   #Setting Remote Control Off
                 time.sleep(120);   #wait 2min
+                #ar_cl.setRemoteControlOn()   #Setting Remote Control On
                 
             count = count + 1
     
@@ -132,6 +147,8 @@ if __name__ == "__main__":   #if executed as main (and not imported)
         print time.strftime("%H:%M:%S")," RF Power Off due to   ",detail
         log_file.write(str(time.strftime("%H:%M:%S")) + "   " + "RF Power Off\n")
     
+    
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # end operation routine
     
     time.sleep(0.1)
