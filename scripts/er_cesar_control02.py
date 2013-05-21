@@ -37,7 +37,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     
     time.sleep(1)
     
-    path = "..\log\log" + str(time.strftime("%d%m%y")) + "_" + str(time.strftime("%H%M%S")) + ".txt"
+    path = "../logs/log" + str(time.strftime("%d%m%y")) + "_" + str(time.strftime("%H%M%S")) + ".txt"
     log_file = open(path,'w')   #create log file
     log_file.close()
     print "Log-File in /logs: ",path
@@ -61,7 +61,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     c1 = 355
     c2 = 605
     
-    tot_time = 150   #total clean time in minutes
+    tot_time = 43   #total clean time in minutes
     
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
@@ -80,7 +80,9 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     print "Status:\n",ar_cl.getStatus()
     time.sleep(0.1)
    
+    ar_cl.setRemoteControlOff()
     a = raw_input("Press Enter to start process.")
+    ar_cl.setRemoteControlOn()
     
     
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
