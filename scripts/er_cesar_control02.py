@@ -61,7 +61,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     c1 = 355
     c2 = 605
     
-    tot_time = 160   #total clean time in minutes
+    tot_time = 150   #total clean time in minutes
     
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
