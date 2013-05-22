@@ -81,7 +81,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     time.sleep(0.1)
    
     ar_cl.setRemoteControlOff()
-    a = raw_input("Press Enter to start process.")
+    a = raw_input("Adjust Matches. Press Enter to start process.")
     ar_cl.setRemoteControlOn()
     
     
