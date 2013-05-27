@@ -91,6 +91,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     try:
         #ar_cl.setMatchingAuto(c1,c2)
         count = 0
+        p_refl_err = 0
         while count < int(tot_time) / 4:   #do (time in minutes / 4) times
     
             ar_cl.setRFOn()   #switch on
@@ -117,13 +118,24 @@ if __name__ == "__main__":   #if executed as main (and not imported)
                     if err > 4:
                         raise IndexError
                     
-                if slc % 3 == 2:                     #every three iterations
-                    if refl/3 > 20:   #if reflected power too high
-                        print time.strftime("%H:%M:%S"), "Reflected Power too high! Process aborted."
-                        writeStatusInLogFile()
-                        log_file.write("Process aborted.\n")
+                if refl/3 > 20:   #if reflected power too high
+                    print time.strftime("%H:%M:%S"), "Reflected Power too high! Switch off\n"
+                    ar_cl.setRFOff()   #switch off
+                    p_refl_err = p_refl_err + 1
+                    writeStatusInLogFile()
+                    if p_refl_err > 2:   #if too many errors occured
+                        log_file.write("Reflected Power too high! Process aborted.\n")
                         count = int(tot_time) / 4 + 1
+                        ar_cl.setRFOff()   #switch off
+                        print "RF finally off."
                         break
+                    else:   #ok so far
+                        time.sleep(4)
+                        ar_cl.setRFOn()   #switch on, retry
+                        print time.strftime("%H:%M:%S")," RF Power On, retry"
+                        refl = 0
+                    
+                if slc % 3 == 2:   #initialize every three iterations
                     refl = 0
                     
    	        slc = slc + 1
@@ -141,6 +153,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
                 #ar_cl.setRemoteControlOff()   #Setting Remote Control Off
                 time.sleep(120);   #wait 2min
                 #ar_cl.setRemoteControlOn()   #Setting Remote Control On
+                p_refl_err = 0   #reset Prefl error count
                 
             count = count + 1
     
