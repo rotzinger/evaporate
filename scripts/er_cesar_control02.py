@@ -23,7 +23,7 @@ def writeStatusInLogFile():
         #print "write"
     except:   #ignore single errors in readout
         print "Write error - ignore"
-        log_file.write("Write error - ignore")
+        log_file.write("Write error - ignore\n")
         w_err = w_err + 1
         if w_err > 4:
             raise IndexError
