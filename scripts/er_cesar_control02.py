@@ -100,13 +100,17 @@ if __name__ == "__main__":   #if executed as main (and not imported)
             
             refl = 0
             slc = 0
-                      #str(int(time.strftime("%d"))+(int(time.strftime("%H")) + (int(time.strftime("%M"))+2)/60)/24)
-            tOff = int(str((int(time.strftime("%H")) + (int(time.strftime("%M"))+2)/60)%24) + str((int(time.strftime("%M"))+2)%60).zfill(2) + str(time.strftime("%S")))   #save time when to switch off plasma
-            #                                 (hour  +   (min+2)/60)/24                                   (hour  +  (min+2)/60)%24                                        (min+2)%60                                       sec
-            #print tOff
+            
+            second_end = str(time.strftime("%S"))
+            second = str((int(time.strftime("%S"))+48)%60).zfill(2)
+            minute = str((int(time.strftime("%M"))+2)%60+((int(time.strftime("%S"))+48)/60)-1).zfill(2)
+            hour = str(int(time.strftime("%H")) + ((int(time.strftime("%M"))+2)+((int(time.strftime("%S"))+48)/60)-1)/60).zfill(2)
+            tOff12 = int(hour + minute + second)   #save time when to escape routine
+  
+            print tOff12
             
             err = 0
-            while int(time.strftime("%H%M%S")) < tOff - 10:   #wait 2min
+            while int(time.strftime("%H%M%S")) < tOff12:   #wait 2min
                 time.sleep(8)
                 writeStatusInLogFile()
             
@@ -140,9 +144,10 @@ if __name__ == "__main__":   #if executed as main (and not imported)
                     
    	        slc = slc + 1
                
-            if tOff - int(time.strftime("%H%M%S")) < 12:
-                time.sleep(tOff - int(time.strftime("%H%M%S")))     #make 2 min full
-            else:
+            if tOff12 - int(time.strftime("%H%M%S")) < 0:   #usual case
+                while time.strftime("%S") != second_end:
+                    time.sleep(0.3)     #make 2 min full
+            else:   #in case something went wrong
                 time.sleep(5)   #catch exception (possibly occuring at midnight -> be careful when cleaning at midnight...)
                 
             ar_cl.setRFOff()   #switch off
