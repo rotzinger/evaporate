@@ -68,28 +68,47 @@ class Cesar136_Dev(object):
         return self.remote_cmd("SICP " + str(c1) + " " + str(c2) + " " + str(p_ign) + " " + str(p_fwd) + " " + str(t_ign))
         
         
-    #info
-    #def info(self,cmd):
-    #    return self.remote_cmd(cmd)
-    
+    #read out status
     def getStatus(self):
-        return self.remote_cmd("GST")
+        try: return self.remote_cmd("GST")
+        except Exception as detail:
+            print "Error: ",detail
+            return 0
     def getPfwd(self):
-        self.setEchoModeOff()
-        return self.getStatus().split()[1]
+        try:
+            self.setEchoModeOff()
+            return self.getStatus().split()[1]
+        except Exception as detail:
+            print "Error: ",detail
+            return 0
     def getPrefl(self):
-        self.setEchoModeOff()
-        return self.getStatus().split()[2]
+        try:
+            self.setEchoModeOff()
+            return self.getStatus().split()[2]
+        except Exception as detail:
+            print "Error: ",detail
+            return 0
     def getBias(self):
-        self.setEchoModeOff()
-        return self.getStatus().split()[3]
+        try:
+            self.setEchoModeOff()
+            return self.getStatus().split()[3]
+        except Exception as detail:
+            print "Error: ",detail
+            return 0
     def getC1(self):
-        self.setEchoModeOff()
-        return self.getStatus().split()[4]
+        try:
+            self.setEchoModeOff()
+            return self.getStatus().split()[4]
+        except Exception as detail:
+            print "Error: ",detail
+            return 0
     def getC2(self):
-        self.setEchoModeOff()
-        return self.getStatus().split()[5]
-        
+        try:
+            self.setEchoModeOff()
+            return self.getStatus().split()[5]
+        except Exception as detail:
+            print "Error: ",detail
+            return 0
         
 
 if __name__ == "__main__":   #if executed as main (and not imported)
@@ -99,13 +118,13 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     #print "Setting Echo Mode On",rd.setEchoModeOn()
     print "Setting Echo Mode Off",rd.setEchoModeOff()
     print "Setting Remote Control On",rd.setRemoteControlOn()
-    print "Status:"
-    return_val = rd.getStatus()
-    ret_val_split = return_val.split()
-    for i in str(return_val): print "#",i,"#", hex(str(i))
-    print len(return_val), return_val.split()
-    print "Setting RF on:", rd.setRFOn()
-    print "waiting 5s...",time.sleep(5)
+    #print "Status:"
+    #return_val = rd.getStatus()
+    #ret_val_split = return_val.split()
+    #for i in str(return_val): print "#",i,"#", hex(str(i))
+    #print len(return_val), return_val.split()
+    #print "Setting RF on:", rd.setRFOn()
+    #print "waiting 5s...",time.sleep(5)
     print "Setting RF off:", rd.setRFOff()
     print "Setting LOCAL Mode",rd.setRemoteControlOff()
  
