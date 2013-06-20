@@ -61,7 +61,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     c1 = 355
     c2 = 605
 
-    effective_clean_time = 75   #effective clean time in minutes
+    effective_clean_time = 144   #effective clean time in minutes
     pause_time = 30             #pause time in seconds
 
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -130,7 +130,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
                     writeStatusInLogFile()
                     if p_refl_err > 2:   #if too many errors occured
                         log_file.write("Reflected Power too high! Process aborted.\n")
-                        count = int(tot_time) / 4 + 1
+                        count = int(effective_clean_time) / 2 + 1
                         ar_cl.setRFOff()   #switch off
                         print "RF finally off."
                         break
@@ -146,7 +146,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
    	        slc = slc + 1
 
             j = 0
-            while int(time.strftime("%H%M%S")) != tOff and j < 50:
+            while int(time.strftime("%H%M%S")) != tOff and j < 50 and count < int(effective_clean_time) / 2:
                 time.sleep(0.3)     #make 2 min full
                 j = j + 1
 
