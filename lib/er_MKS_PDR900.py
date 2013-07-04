@@ -73,6 +73,9 @@ class Pressure_Dev(object):
     def getSerial(self):
         return self.remote_cmd("@001SNC?;FF")
         
+    def getAddress(self):
+        return self.remote_cmd("254ADC?;FF")
+        
                 
 if __name__ == "__main__":
     p1 = Pressure_Dev()
@@ -80,3 +83,4 @@ if __name__ == "__main__":
     #print "Penning:", p1.getUHV()
     #print "Pirani 1:", p1.getTM1()    
     print p1.getSerial()
+    print p1.getAddress()
