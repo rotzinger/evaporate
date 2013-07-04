@@ -43,10 +43,10 @@ class Pressure_Dev(object):
         
     
     def getTM1(self):
-        value = self.remote_cmd("@001DL?;FF")
+        #self.remote_cmd("@001DL?;FF")
         # "TM1:MBAR  : 1.00E+03"
-	print value
-	return 
+	#print value
+	return self.remote_cmd("@001DL?;FF")
 	#try:
         #	gauge,pressure = value.split(" : ")
         #	return float(pressure.strip())
@@ -84,3 +84,5 @@ if __name__ == "__main__":
     #print "Pirani 1:", p1.getTM1()    
     #print p1.getSerial()
     print p1.getAddress()
+    time.sleep(1)
+    print "Pirani 1:", p1.getTM1()
