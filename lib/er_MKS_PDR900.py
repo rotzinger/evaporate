@@ -46,11 +46,12 @@ class Pressure_Dev(object):
         value = self.remote_cmd("@001DL?;FF")
         # "TM1:MBAR  : 1.00E+03"
 	print value
-	try:
-        	gauge,pressure = value.split(" : ")
-        	return float(pressure.strip())
-    	except:
-		return None
+	return 
+	#try:
+        #	gauge,pressure = value.split(" : ")
+        #	return float(pressure.strip())
+    	#except:
+	#	return None
 
     def getTM2(self):
         value = self.remote_cmd("MES R TM2")
@@ -68,8 +69,14 @@ class Pressure_Dev(object):
         except:
 		print 'er_combivac exception ...'
                 return None
+                
+    def getSerial(self):
+        return self.remote_cmd("@001SNC?;FF")
+        
+                
 if __name__ == "__main__":
     p1 = Pressure_Dev()
     #print p1.setHV(on=False)
     #print "Penning:", p1.getUHV()
-    print "Pirani 1:", p1.getTM1()    
+    #print "Pirani 1:", p1.getTM1()    
+    print p1.getSerial()
