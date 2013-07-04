@@ -6,8 +6,8 @@ import atexit
 class Pressure_Dev(object): 
     def __init__(self):
 
-        self.ack="\x06"
-        self.nak="\x15"
+        self.ack="ACK"
+        self.nak="NAK"
         baudrate = 9600
         timeout = 0.1
         
@@ -25,17 +25,17 @@ class Pressure_Dev(object):
         return serial.Serial(device, baudrate, timeout=timeout)
         
     def remote_cmd(self,cmd):
-        cmd+=""
+        cmd+="\n"
 
         # clear queue first, old data,etc
-        rem_char = self.ser.inWaiting()
-        if rem_char:
-            self.ser.read(rem_char)
+        #rem_char = self.ser.inWaiting()
+        #if rem_char:
+        #    self.ser.read(rem_char)
         
         # send command
         self.ser.write(cmd)
         # wait until data is processed
-        time.sleep(2)
+        time.sleep(0.5)
         # read back
         rem_char = self.ser.inWaiting()
         value = self.ser.read(rem_char)
