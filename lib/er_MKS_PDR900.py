@@ -74,7 +74,7 @@ class Pressure_Dev(object):
         return self.remote_cmd("@001SNC?;FF")
         
     def getAddress(self):
-        return self.remote_cmd("001ADC?;FF")
+        return self.remote_cmd("@254ADC?;FF")
         
                 
 if __name__ == "__main__":
