@@ -17,4 +17,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     
     while True:
         print str(time.strftime("%H:%M:%S")) +  "   LL: " + str(pLL.getPressure()) + "   MC: " + str(pMC.getPressure())
-        time.sleep(20)
+        a = raw_input("More?")
+        if a == "q":
+            break
+        #time.sleep(20)
