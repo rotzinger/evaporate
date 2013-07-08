@@ -95,7 +95,7 @@ if __name__ == "__main__":
     pMC = Pressure_Dev("MC")
     #print p1.getSerial()
     print "Baudrate Transducer MC: ", pMC.getBaudT()
-    addr = str(MC.getAddressT())    #transducer address
+    addr = str(pMC.getAddressT())    #transducer address
     print "Pressure: ", pMC.getPressure(addr)
     
     pLL = Pressure_Dev("LL")
