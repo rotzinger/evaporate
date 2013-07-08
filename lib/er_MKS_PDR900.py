@@ -35,7 +35,7 @@ class Pressure_Dev(object):
         # send command
         self.ser.write(cmd)
         # wait until data is processed
-        time.sleep(0.1)
+        time.sleep(0.2)
         # read back
         rem_char = self.ser.inWaiting()
         value = self.ser.read(rem_char)
