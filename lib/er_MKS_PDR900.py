@@ -4,14 +4,14 @@ import time,sys
 import atexit
 
 class Pressure_Dev(object): 
-    def __init__(self,device_sel = "MC"):
+    def __init__(self,device_sel = "LL"):
 
         self.ack="ACK"
         self.nak="NAK"
         baudrate = 9600
         timeout = 0.1
         
-        if device_sel == "LL":
+        if device_sel == "MC":
 	   device = "/dev/ttyUSB2"
 	else:
 	   device = "/dev/ttyUSB1"
