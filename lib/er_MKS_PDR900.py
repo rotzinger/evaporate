@@ -79,7 +79,7 @@ class Pressure_Dev(object):
     #transducer methods
     
     def getSerialT(self):
-        return self.remote_cmd("@001SN?;FF")
+        return self.remote_cmd("@002SN?;FF")
     
         
                 
