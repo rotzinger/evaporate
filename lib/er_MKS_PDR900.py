@@ -87,7 +87,7 @@ class Pressure_Dev(object):
     def getAddressT(self):
         return self.remote_cmd("@xxxAD?;FF")[7:10]
         
-    def getPressure(self,address = "002"):
+    def getPressure(self,address):
         return self.remote_cmd("@" + address + "PR3?;FF")[7:14]
         
                 
