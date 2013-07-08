@@ -85,30 +85,18 @@ class Pressure_Dev(object):
         return self.remote_cmd("@xxxBR?;FF")
         
     def getAddressT(self):
-        return self.remote_cmd("@xxxAD?;FF")
+        resp = self.remote_cmd("@xxxAD?;FF")
+        return resp[7:10]
         
-    def getDelayT(self):
-        return self.remote_cmd("@xxxRSD?;FF")
-        
-    def getPressure(self):
-        return self.remote_cmd("@002PR3?;FF")
+    def getPressure(self,add = "002"):
+        return self.remote_cmd("@" + add + "PR3?;FF")
     
         
                 
 if __name__ == "__main__":
     p1 = Pressure_Dev()
-    #print p1.setHV(on=False)
-    #print "Penning:", p1.getUHV()
-    #print "Pirani 1:", p1.getTM1()    
-    #print p1.getSerial()
     print p1.getSerial()
-    time.sleep(1)
-    print p1.getSerialT()
-    time.sleep(1)
-    print p1.getAddressT()
-    time.sleep(1)
     print p1.getBaudT()
-    time.sleep(1)
-    print p1.getDelayT()
-    time.sleep(1)
-    print p1.getPressure()
+    print p1.getAddressT()
+   
+    print p1.getPressure(str(p1.getAddressT()))
