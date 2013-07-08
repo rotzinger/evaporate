@@ -89,6 +89,9 @@ class Pressure_Dev(object):
         
     def getDelayT(self):
         return self.remote_cmd("@xxxRSD?;FF")
+        
+    def getPressure(self):
+        return self.remote_cmd("@002PR3?;FF")
     
         
                 
@@ -105,3 +108,7 @@ if __name__ == "__main__":
     print p1.getAddressT()
     time.sleep(1)
     print p1.getBaudT()
+    time.sleep(1)
+    print p1.getDelayT()
+    time.sleep(1)
+    print p1.getPressure()
