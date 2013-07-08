@@ -4,15 +4,18 @@ import time,sys
 import atexit
 
 class Pressure_Dev(object): 
-    def __init__(self):
+    def __init__(self,device = "MC"):
 
         self.ack="ACK"
         self.nak="NAK"
         baudrate = 9600
         timeout = 0.1
         
-        # Port B on the USB_to_serial converter
-	device = "/dev/ttyUSB1"
+        if device == "LL":
+	   device = "/dev/ttyUSB2"
+	else:
+	   device = "/dev/ttyUSB1"
+	   
         self.ser = self._std_open(device,baudrate,timeout)
         atexit.register(self.ser.close)
             
@@ -79,7 +82,7 @@ class Pressure_Dev(object):
     #transducer methods
         
     def getBaudT(self):
-        return self.remote_cmd("@xxxBR?;FF")[7:-1]
+        return self.remote_cmd("@xxxBR?;FF")[7:-3]
         
     def getAddressT(self):
         return self.remote_cmd("@xxxAD?;FF")[7:10]
@@ -89,8 +92,11 @@ class Pressure_Dev(object):
         
                 
 if __name__ == "__main__":
-    p1 = Pressure_Dev()
+    pMC = Pressure_Dev("MC")
     #print p1.getSerial()
-    print "Baudrate Transducer: ", p1.getBaudT()
-    addr = str(p1.getAddressT())    #transducer address
-    print "Pressure: ", p1.getPressure(addr)
+    print "Baudrate Transducer MC: ", pMC.getBaudT()
+    addr = str(MC.getAddressT())    #transducer address
+    print "Pressure: ", pMC.getPressure(addr)
+    
+    pLL = Pressure_Dev("LL")
+    print "Baudrate Transducer LL: ", pMC.getBaudT()
