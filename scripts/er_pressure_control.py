@@ -20,7 +20,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
         log_file = open(path,'w')   #create log file
         
         while int(time.strftime("%H%M%S",time.localtime(time.time()+65))) < 235959:
-            log_file.write(str(time.strftime("%H:%M:%S")) + ":   LL: " + str(pLL.getPressure()) + "   MC: " + str(pMC.getPressure()))
+            log_file.write(str(time.strftime("%H:%M:%S")) + ":   LL: " + str(pLL.getPressure()) + "   MC: " + str(pMC.getPressure()) + "\n")
             time.sleep(10)
             
         log_file.close()
