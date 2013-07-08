@@ -12,6 +12,9 @@ import time,sys
 if __name__ == "__main__":   #if executed as main (and not imported)
 
     time.sleep(1)
+    
+    print "Running..."
+    
     pLL = Pressure_Dev("LL")
     pMC = Pressure_Dev("MC")
     
