@@ -4,14 +4,14 @@ import time,sys
 import atexit
 
 class Pressure_Dev(object): 
-    def __init__(self,device = "MC"):
+    def __init__(self,device_sel = "MC"):
 
         self.ack="ACK"
         self.nak="NAK"
         baudrate = 9600
         timeout = 0.1
         
-        if device == "LL":
+        if device_sel == "LL":
 	   device = "/dev/ttyUSB2"
 	else:
 	   device = "/dev/ttyUSB1"
@@ -101,4 +101,5 @@ if __name__ == "__main__":
     pLL = Pressure_Dev("LL")
     print "Baudrate Transducer LL: ", pMC.getBaudT()
     addrLL = str(pLL.getAddressT())    #transducer address
+    print addrLL
     print "Pressure LL: ", pMC.getPressure(addrLL)
