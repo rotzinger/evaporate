@@ -79,16 +79,16 @@ class Pressure_Dev(object):
     #transducer methods
     
     def getSerialT(self):
-        return self.remote_cmd("@002SN?;FF")
+        return self.remote_cmd("@xxxSN?;FF")
         
     def getBaudT(self):
         return self.remote_cmd("@xxxBR?;FF")
         
     def getAddressT(self):
-        return self.remote_cmd("@002SN?;FF")
+        return self.remote_cmd("@xxxAD?;FF")
         
     def getDelayT(self):
-        return self.remote_cmd("@002SN?;FF")
+        return self.remote_cmd("@xxxRSD?;FF")
     
         
                 
@@ -99,5 +99,9 @@ if __name__ == "__main__":
     #print "Pirani 1:", p1.getTM1()    
     #print p1.getSerial()
     print p1.getSerial()
+    time.sleep(1)
+    print p1.getSerialT()
+    time.sleep(1)
+    print p1.getAddressT()
     time.sleep(1)
     print p1.getBaudT()
