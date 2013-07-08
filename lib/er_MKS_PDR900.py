@@ -76,6 +76,12 @@ class Pressure_Dev(object):
     def getAddress(self):
         return self.remote_cmd("@254ADC?;FF")
         
+    #transducer methods
+    
+    def getSerialT(self):
+        return self.remote_cmd("@001SN?;FF")
+    
+        
                 
 if __name__ == "__main__":
     p1 = Pressure_Dev()
@@ -83,6 +89,6 @@ if __name__ == "__main__":
     #print "Penning:", p1.getUHV()
     #print "Pirani 1:", p1.getTM1()    
     #print p1.getSerial()
-    print p1.getAddress()
+    print p1.getSerial()
     time.sleep(1)
-    print "Pirani 1:", p1.getTM1()
+    print p1.getSerialT()
