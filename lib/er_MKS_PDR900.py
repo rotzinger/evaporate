@@ -71,32 +71,26 @@ class Pressure_Dev(object):
                 return None
                 
     def getSerial(self):
-        return self.remote_cmd("@001SNC?;FF")
+        return self.remote_cmd("@001SNC?;FF")[7:-3]
         
     def getAddress(self):
         return self.remote_cmd("@254ADC?;FF")
         
     #transducer methods
-    
-    def getSerialT(self):
-        return self.remote_cmd("@002SN?;FF")
         
     def getBaudT(self):
-        return self.remote_cmd("@xxxBR?;FF")
+        return self.remote_cmd("@xxxBR?;FF")[7:-1]
         
     def getAddressT(self):
-        resp = self.remote_cmd("@xxxAD?;FF")
-        return resp[7:10]
+        return self.remote_cmd("@xxxAD?;FF")[7:10]
         
-    def getPressure(self,add = "002"):
-        return self.remote_cmd("@" + add + "PR3?;FF")
-    
+    def getPressure(self,address = "002"):
+        return self.remote_cmd("@" + address + "PR3?;FF")[7:14]
         
                 
 if __name__ == "__main__":
     p1 = Pressure_Dev()
-    print p1.getSerial()
-    print p1.getBaudT()
-    print p1.getAddressT()
-   
-    print p1.getPressure(str(p1.getAddressT()))
+    #print p1.getSerial()
+    print "Baudrate Transducer: ", p1.getBaudT()
+    addr = str(p1.getAddressT())    #transducer address
+    print "Pressure: ", p1.getPressure(addr)
