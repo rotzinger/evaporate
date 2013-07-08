@@ -45,39 +45,24 @@ class Pressure_Dev(object):
         return value
         
     
+    #due to compatibility...
     def getTM1(self):
-        #self.remote_cmd("@001DL?;FF")
-        # "TM1:MBAR  : 1.00E+03"
-	#print value
-	return self.remote_cmd("@001DL?;FF")
-	#try:
-        #	gauge,pressure = value.split(" : ")
-        #	return float(pressure.strip())
-    	#except:
-	#	return None
-
+	return self.getPressure(self.getAddressT())
+	
     def getTM2(self):
-        value = self.remote_cmd("MES R TM2")
-        # "TM1:MBAR  : 1.00E+03"
-	try:
-        	gauge,pressure = value.split(" : ")
-		return float(pressure.strip())
-    	except:
-		return None
+        return self.getPressure(self.getAddressT())
+        
     def getUHV(self):
-        value = self.remote_cmd("MES R PM1")
-        try:
-                gauge,pressure = value.split(" : ")
-                return float(pressure.strip())
-        except:
-		print 'er_combivac exception ...'
-                return None
+        return self.getPressure(self.getAddressT())
                 
+                
+    #controller methods
     def getSerial(self):
         return self.remote_cmd("@001SNC?;FF")[7:-3]
         
     def getAddress(self):
         return self.remote_cmd("@254ADC?;FF")
+        
         
     #transducer methods
         
@@ -87,19 +72,21 @@ class Pressure_Dev(object):
     def getAddressT(self):
         return self.remote_cmd("@xxxAD?;FF")[7:10]
         
-    def getPressure(self,address):
+    def getPressure(self):
+        address = self.getAddressT()
         return self.remote_cmd("@" + address + "PR3?;FF")[7:14]
+        
+    def setAddressT(self,address = "002"):
+        return self.remote_cmd("@xxxAD!" + address + ";FF")
         
                 
 if __name__ == "__main__":
     pMC = Pressure_Dev("MC")
-    #print p1.getSerial()
     print "Baudrate Transducer MC: ", pMC.getBaudT()
     addrMC = str(pMC.getAddressT())    #transducer address
-    print "Pressure: ", pMC.getPressure(addrMC)
+    print "Pressure MC: ", pMC.getPressure(addrMC)
     
     pLL = Pressure_Dev("LL")
     print "Baudrate Transducer LL: ", pLL.getBaudT()
     addrLL = str(pLL.getAddressT())    #transducer address
-    print addrLL
     print "Pressure LL: ", pLL.getPressure(addrLL)
