@@ -4,7 +4,7 @@ import time,sys
 import atexit
 
 class Pressure_Dev(object): 
-    def __init__(self,device_sel):
+    def __init__(self,device_sel = "MC"):
 
         self.ack="ACK"
         self.nak="NAK"
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     print "Pressure: ", pMC.getPressure(addrMC)
     
     pLL = Pressure_Dev("LL")
-    print "Baudrate Transducer LL: ", pMC.getBaudT()
+    print "Baudrate Transducer LL: ", pLL.getBaudT()
     addrLL = str(pLL.getAddressT())    #transducer address
     print addrLL
-    print "Pressure LL: ", pMC.getPressure(addrLL)
+    print "Pressure LL: ", pLL.getPressure(addrLL)
