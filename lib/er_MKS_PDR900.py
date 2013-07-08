@@ -35,7 +35,7 @@ class Pressure_Dev(object):
         # send command
         self.ser.write(cmd)
         # wait until data is processed
-        time.sleep(0.5)
+        time.sleep(2)
         # read back
         rem_char = self.ser.inWaiting()
         value = self.ser.read(rem_char)
@@ -80,6 +80,15 @@ class Pressure_Dev(object):
     
     def getSerialT(self):
         return self.remote_cmd("@002SN?;FF")
+        
+    def getBaudT(self):
+        return self.remote_cmd("@xxxBR?;FF")
+        
+    def getAddressT(self):
+        return self.remote_cmd("@002SN?;FF")
+        
+    def getDelayT(self):
+        return self.remote_cmd("@002SN?;FF")
     
         
                 
@@ -91,4 +100,4 @@ if __name__ == "__main__":
     #print p1.getSerial()
     print p1.getSerial()
     time.sleep(1)
-    print p1.getSerialT()
+    print p1.getBaudT()
