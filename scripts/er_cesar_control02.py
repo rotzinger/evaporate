@@ -1,4 +1,4 @@
-# control script for Ar clean using Cesar136 version 1.0 written by JB@KIT 05/2013
+# control script for Ar clean using Cesar136 version 2.0 written by JB@KIT 06/2013
 
 import os,sys
 sys.path.append('../lib')
@@ -58,15 +58,15 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #settings
 
-    c1 = 430
-    c2 = 726
+    c1 = 355
+    c2 = 605
 
-    effective_clean_time = 16   #effective clean time in minutes
+    effective_clean_time = 50   #effective clean time in minutes
     pause_time = 30             #pause time in seconds
 
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    ar_cl.setOperationMode(0,100,0)
+    ar_cl.setOperationMode(0,200,0)
     print "Pfwd: 100W"   #P_fwd = 100W
     time.sleep(0.1)
     ar_cl.setMatches(c1,c2)
@@ -93,7 +93,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
         #ar_cl.setMatchingAuto(c1,c2)
         count = 0
         p_refl_err = 0
-        while count < int(effective_clean_time) / 2:   #do (time in minutes / 4) times
+        while count < int(effective_clean_time) / 2:
 
             ar_cl.setRFOn()   #switch on
             print time.strftime("%H:%M:%S")," RF Power On"
