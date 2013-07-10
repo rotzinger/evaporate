@@ -58,15 +58,15 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #settings
 
-    c1 = 355
-    c2 = 605
+    c1 = 430
+    c2 = 726
 
-    effective_clean_time = 50   #effective clean time in minutes
+    effective_clean_time = 22   #effective clean time in minutes
     pause_time = 30             #pause time in seconds
 
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    ar_cl.setOperationMode(0,200,0)
+    ar_cl.setOperationMode(0,100,0)
     print "Pfwd: 100W"   #P_fwd = 100W
     time.sleep(0.1)
     ar_cl.setMatches(c1,c2)
@@ -154,13 +154,13 @@ if __name__ == "__main__":   #if executed as main (and not imported)
             print time.strftime("%H:%M:%S")," RF Power Off"
             log_file.write(str(time.strftime("%H:%M:%S")) + "   " + "RF Power Off\n")
 
+            count = count + 1
             if count < int(effective_clean_time) / 2:
                 #ar_cl.setRemoteControlOff()   #Setting Remote Control Off
                 time.sleep(int(pause_time));   #wait pause time
                 #ar_cl.setRemoteControlOn()   #Setting Remote Control On
                 p_refl_err = 0   #reset Prefl error count
 
-            count = count + 1
 
     except Exception as detail:
         ar_cl.setRFOff()   #switch off
