@@ -58,10 +58,10 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #settings
 
-    c1 = 355
-    c2 = 605
+    c1 = 430
+    c2 = 726
 
-    effective_clean_time = 144   #effective clean time in minutes
+    effective_clean_time = 16   #effective clean time in minutes
     pause_time = 30             #pause time in seconds
 
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
