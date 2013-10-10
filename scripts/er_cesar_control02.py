@@ -61,7 +61,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     c1 = 414
     c2 = 724
 
-    effective_clean_time = 34   #effective clean time in minutes
+    effective_clean_time = 16   #effective clean time in minutes
     pause_time = 30             #pause time in seconds
 
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
