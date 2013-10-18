@@ -1,5 +1,6 @@
 # MKS MFC Controller 647C DEV version 0.1 written by HR@KIT 12/2012
 # Mass flow controller monitor/controller
+
 import time,sys
 import atexit
 #import struct
@@ -20,11 +21,11 @@ class MKS647C_Dev(object):
         else:    
             # open serial port, 9600, 8,N,1, timeout 1s
             #device="/dev/tty.usbserial"
-            baudrate = 38400
+            baudrate = 9600
             timeout = 0.1
             # Port A on the USB_to_serial converter, Port B ends with K
-            device = "/dev/cu.usbserial-FTK3DEL5A"
-            #device = "/dev/ttyUSB0" 
+            #device = "/dev/cu.usbserial-FTK3DEL5A"
+            device = "/dev/ttyUSB3" 
             self.SerialPort = self._std_open(device,baudrate,timeout)
             atexit.register(self.SerialPort.close)
         
@@ -48,6 +49,8 @@ class MKS647C_Dev(object):
             #print "##"+value+"##"+value.strip()+"###"
             return value #value.strip()
         
+        
+        
     def getFlowSetPoint(self):
         cmd = "FS " + str(self.channel) +" R"
         return self.remote_cmd(cmd)
@@ -56,9 +59,11 @@ class MKS647C_Dev(object):
         cmd = "FS " + str(self.channel) +str(value)
         return self.remote_cmd(cmd)   
     
+    
     def getAcutalFlow(self):
         cmd = "FL " + str(self.channel)
         return self.remote_cmd(cmd)    
+    
     
     def getPressureSetPoint(self):
         cmd = "PS R"
@@ -86,8 +91,7 @@ class MKS647C_Dev(object):
             cmd = "PM 0"
         return self.remote_cmd(cmd)
     
-    def getPressureMode(self):
-        # or Pressure_Mode_On?
+    def PressureModeOn(self):
         cmd = "PM R"
         status = self.remote_cmd(cmd)
         if int(status) == 1:
@@ -142,6 +146,12 @@ class MKS647C_Dev(object):
         """
         cmd = "RA "+str(self.channel)+" "+str(value)
         return self.remote_cmd(cmd)
+        
+    def setFlowRange10sccm(self):
+        return self.setFlowRange(3)
+        
+    def setFlowRange100sccm(self):
+        return self.setFlowRange(6)
     
     def getFlowRange(self):
         # from manual,
@@ -163,7 +173,7 @@ class MKS647C_Dev(object):
         cmd = "GC "+str(self.channel)+" R"
         return float(self.remote_cmd(cmd))
     
-    def setMode(self,mode, master_channel = 0):
+    def setMode(self,mode = 0, master_channel = 0):
         """
         MO c m [i]channel
         c = 1..8 
@@ -185,7 +195,57 @@ class MKS647C_Dev(object):
         return int(mode), int(master_channel)
     
     
+    def setHighLimit(self,l):   #in 0.1 percent: 0..1100
+        cmd = "HL " + str(self.channel) + " " + str(l)
+        return self.remote_cmd(cmd)
+        
+    def setLowLimit(self,l):
+        cmd = "LL " + str(self.channel) + " " + str(l)
+        return self.remote_cmd(cmd)
+        
+    def getHighLimit(self):   #in 0.1 percent: 0..1100
+        cmd = "HL " + str(self.channel) + " R"
+        return self.remote_cmd(cmd)
+        
+    def getLowLimit(self):
+        cmd = "LL " + str(self.channel) + " R"
+        return self.remote_cmd(cmd)
     
+    def setPressureUnit(self,pu = 15):
+        cmd = "PU " + str(pu)
+        return self.remote_cmd(cmd)
+    """ 
+    15: 1mbar
+    11: 1ubar
+    """
+    def getPressureUnit(self):
+        cmd = "PU R"
+        return self.remote_cmd(cmd)
+        
+    
+    def setOnAll(self):
+        return self.remote_cmd("ON 0")
+    def setOn(self):
+        return self.remote_cmd("ON " + str(self.channel))
+    def setOffAll(self):
+        return self.remote_cmd("OF 0")
+    def setOff(self):
+        return self.remote_cmd("OF " + str(self.channel))
+        
+        
+    def check_channelStatus(self):
+        return self.remote_cmd("ST " + str(self.channel))
+        
+    def setDefault(self):
+        return self.remote_cmd("DF")
+        
+    def hardware_reset(self):
+        return self.remote_cmd("RE")
+        
+    def getVersion(self):
+        return self.remote_cmd("ID")
+    
+    """
     # commands for setting values with the power supply
     
     def check_range(self,value,minval,maxval):
@@ -198,11 +258,10 @@ class MKS647C_Dev(object):
             self.remote_cmd('A')        
         else:
             self.remote_cmd('B')            
-
+   """
+   
 
 if __name__ == "__main__":
     rd=MKS647C_Dev()
     #print rd.getHello()
-    print 'Version:',rd.getVersion()
-    print 'SetOn',rd.setOn()
-    #print 'Thickness:',rd.getThickness()*100
+    print "Version: ",rd.getVersion()
