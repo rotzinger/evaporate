@@ -1,4 +1,4 @@
-# MKS MFC Controller 647C DEV version 0.1 written by HR@KIT 12/2012
+# MKS MFC Controller 647C DEV version 1.0 written by HR/JB@KIT 10/2013
 # Mass flow controller monitor/controller
 
 import time,sys
@@ -9,7 +9,7 @@ from threading import Lock
 
 class MKS647C_Dev(object):
         
-    def __init__(self,channel = 0 ,mutex = None, SerialPort = None):
+    def __init__(self,channel = 1 ,mutex = None, SerialPort = None):
         self.channel = channel
         if mutex:
             self.mutex = mutex
@@ -47,22 +47,23 @@ class MKS647C_Dev(object):
         
             value = self.SerialPort.read(rem_char) # .strip("\x06")
             #print "##"+value+"##"+value.strip()+"###"
-            return value #value.strip()
+            return value.strip()
         
         
         
     def getFlowSetPoint(self):
         cmd = "FS " + str(self.channel) +" R"
-        return self.remote_cmd(cmd)
+        flow = float(self.remote_cmd(cmd))   #gives N2 flow 
+        return flow*self.getGasCorrectionFactor()
     def setFlowSetPoint(self,value):
-        # value in 0.1 percent of fullscale: 0..1100
-        cmd = "FS " + str(self.channel) +str(value)
+        cmd = "FS " + str(self.channel) + str(float(value)/self.getGasCorrectionFactor())
         return self.remote_cmd(cmd)   
     
     
     def getAcutalFlow(self):
         cmd = "FL " + str(self.channel)
-        return self.remote_cmd(cmd)    
+        flow = float(self.remote_cmd(cmd))   #gives N2 flow 
+        return flow*self.self.getGasCorrectionFactor()
     
     
     def getPressureSetPoint(self):
@@ -169,6 +170,10 @@ class MKS647C_Dev(object):
         flownum = int(self.remote_cmd(cmd))
         return flows[flownum],units[flownum]
     
+    def setGasCorrectionFactor(self,factor):
+        cmd = "GC "+str(self.channel)+str(factor)
+        return float(self.remote_cmd(cmd))
+    
     def getGasCorrectionFactor(self):
         cmd = "GC "+str(self.channel)+" R"
         return float(self.remote_cmd(cmd))
@@ -262,6 +267,57 @@ class MKS647C_Dev(object):
    
 
 if __name__ == "__main__":
-    rd=MKS647C_Dev()
-    #print rd.getHello()
+
+    Ar = MKS647C_Dev(1)
+    mutex = Ar.getMutex()
+    N2 = MKS647C_Dev(2,mutex)
+    O2 = MKS647C_Dev(3,mutex)
+    ArO = MKS647C_Dev(4,mutex)
+    
+    print "Setting off all", Ar.setOffAll()
+    
     print "Version: ",rd.getVersion()
+    print Ar.getFlowSetPoint()
+    print N2.getFlowSetPoint()
+    print O2.getFlowSetPoint()
+    print ArO.getFlowSetPoint()
+    
+    print Ar.getActualFlow()
+    print N2.getActualFlow()
+    print O2.getActualFlow()
+    print ArO.getActualFlow()
+    
+    print Ar.setFlowSetPoint(19)
+    print N2.setFlowSetPoint(15)
+    print O2.setFlowSetPoint(16)
+    print ArO.setFlowSetPoint(7)
+    
+    time.sleep(1)
+    
+    print Ar.getFlowSetPoint()
+    print N2.getFlowSetPoint()
+    print O2.getFlowSetPoint()
+    print ArO.getFlowSetPoint()
+    
+    print Ar.getFlowRange()
+    print N2.getFlowRange()
+    print O2.getFlowRange()
+    print ArO.getFlowRange()
+    
+    print Ar.getActualPressure()
+    print Ar.setFlowRange100sccm()
+    print N2.setFlowRange100sccm()
+    print O2.setFlowRange100sccm()
+    print ArO.setFlowRange10sccm()
+    
+    print Ar.getFlowSetPoint()
+    print N2.getFlowSetPoint()
+    print O2.getFlowSetPoint()
+    print ArO.getFlowSetPoint()
+    
+    print Ar.getGasCorrectionFactor()
+    print Ar.getGasCorrectionFactor(137.0)
+    print Ar.getGasCorrectionFactor()
+    
+    print Ar.getPressureUnit()
+    
