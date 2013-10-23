@@ -53,10 +53,8 @@ class MKS647C_Dev(object):
         
     def getFlowSetPoint(self):
         cmd = "FS " + str(self.channel) +" R"
-		flow = self.remote_cmd(cmd).lstrip("0")   #gives N2 flow
-		if len(flow) == 0:
-	    	flow = "0"
-        return float(int(flow))/10*self.getGasCorrectionFactor()
+		flow = self.remote_cmd(cmd)   #gives N2 flow
+		return float(flow)/10*self.getGasCorrectionFactor()
     def setFlowSetPoint(self,value):
         cmd = "FS " + str(self.channel) + " " + str(float(value)*10/self.getGasCorrectionFactor())
         return self.remote_cmd(cmd)   
@@ -277,9 +275,8 @@ class MKS647C_Dev(object):
 		self.channel = 1	#Argon
 		self.setFlowSetPoint(0)
 		self.setFlowRange100sccm()
-		self.setGasCorrectionFactor("00137")
-		
-		self.channel = 2	#AN2
+		self.setGasCorrectionFactor("00137
+		self.channel = 2	#N2
 		self.setFlowSetPoint(0)
 		self.setFlowRange100sccm()
 		self.setGasCorrectionFactor("00100")
@@ -292,7 +289,7 @@ class MKS647C_Dev(object):
 		self.channel = 4	#ArO2
 		self.setFlowSetPoint(0)
 		self.setFlowRange10sccm()
-		self.setGasCorrectionFactor("00112")
+		self.setGasCorrectionFactor("00100") #1.12
 
 
 
