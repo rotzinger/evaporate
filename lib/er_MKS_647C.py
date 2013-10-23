@@ -62,10 +62,8 @@ class MKS647C_Dev(object):
     
     def getActualFlow(self):
         cmd = "FL " + str(self.channel)
-        flow = self.remote_cmd(cmd).lstrip("0")   #gives N2 flow
-		if len(flow) == 0:
-	    	flow = "0"
-        return float(int(flow))/10*self.getGasCorrectionFactor()
+        flow = self.remote_cmd(cmd)   #gives N2 flow
+        return float(flow)/10*self.getGasCorrectionFactor()
     
     
     def getPressureSetPoint(self):
@@ -173,13 +171,14 @@ class MKS647C_Dev(object):
         return flows[flownum],units[flownum]
     
     def setGasCorrectionFactor(self,factor):
-        cmd = "GC "+str(self.channel)+str(factor)
+    	ffactor = "00" + str(factor).strip(".",",")
+        cmd = "GC "+str(self.channel)+str(ffactor)
         return self.remote_cmd(cmd)
     
     def getGasCorrectionFactor(self):
         cmd = "GC "+str(self.channel)+" R"
         res = self.remote_cmd(cmd)
-		return float(int(res.lstrip("0")))/100
+		return float(res)/100
     
     def setMode(self,mode = 0, master_channel = 0):
         """
