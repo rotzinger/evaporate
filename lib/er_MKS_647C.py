@@ -268,27 +268,27 @@ class MKS647C_Dev(object):
             self.remote_cmd('B')            
 	"""
    
-	def init_controller(self):
-		self.setPressureUnit()
+    def init_controller(self):
+	self.setPressureUnit()
 		
-		self.channel = 1	#Argon
-		self.setFlowSetPoint(0)
-		self.setFlowRange100sccm()
-		self.setGasCorrectionFactor("00137
-		self.channel = 2	#N2
-		self.setFlowSetPoint(0)
-		self.setFlowRange100sccm()
-		self.setGasCorrectionFactor("00100")
-		
-		self.channel = 3	#O2
-		self.setFlowSetPoint(0)
-		self.setFlowRange100sccm()
-		self.setGasCorrectionFactor("00100")
-		
-		self.channel = 4	#ArO2
-		self.setFlowSetPoint(0)
-		self.setFlowRange10sccm()
-		self.setGasCorrectionFactor("00100") #1.12
+	self.channel = 1	#Argon
+	self.setFlowSetPoint(0)
+	self.setFlowRange100sccm()
+	self.setGasCorrectionFactor("00137
+	self.channel = 2	#N2
+	self.setFlowSetPoint(0)
+	self.setFlowRange100sccm()
+	self.setGasCorrectionFactor("00100")
+	
+	self.channel = 3	#O2
+	self.setFlowSetPoint(0)
+	self.setFlowRange100sccm()
+	self.setGasCorrectionFactor("00100")
+	
+	self.channel = 4	#ArO2
+	self.setFlowSetPoint(0)
+	self.setFlowRange10sccm()
+	self.setGasCorrectionFactor("00100") #1.12
 
 
 
@@ -302,8 +302,8 @@ if __name__ == "__main__":
     
     print "Setting off all", Ar.setOffAll()
 
-	#print "Initializing controller."
-	#Ar.init_controller()
+    #print "Initializing controller."
+    #Ar.init_controller()
 
     print "Version: ",Ar.getVersion()
     print Ar.getFlowSetPoint()
