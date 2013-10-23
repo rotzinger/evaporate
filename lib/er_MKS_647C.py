@@ -52,9 +52,9 @@ class MKS647C_Dev(object):
         
         
     def getFlowSetPoint(self):
-        cmd = "FS " + str(self.channel) +" R"
-		flow = self.remote_cmd(cmd)   #gives N2 flow #indent error?
-		return float(flow)/10*self.getGasCorrectionFactor()
+    	cmd = "FS " + str(self.channel) +" R"
+    	flow = self.remote_cmd(cmd)   #gives N2 flow #indent error?
+    	return float(flow)/10*self.getGasCorrectionFactor()
     def setFlowSetPoint(self,value):
         cmd = "FS " + str(self.channel) + " " + str(float(value)*10/self.getGasCorrectionFactor())
         return self.remote_cmd(cmd)   
