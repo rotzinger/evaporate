@@ -22,7 +22,7 @@ class MKS647C_Dev(object):
             # open serial port, 9600, 8,N,1, timeout 1s
             #device="/dev/tty.usbserial"
             baudrate = 9600
-            timeout = 0.1
+            timeout = 1
             # Port A on the USB_to_serial converter, Port B ends with K
             #device = "/dev/cu.usbserial-FTK3DEL5A"
             device = "/dev/ttyUSB3" 
@@ -41,29 +41,33 @@ class MKS647C_Dev(object):
         with self.mutex:
             self.SerialPort.write(cmd)
         
-            time.sleep(0.1)
+            time.sleep(0.2)   #increase from .1 to .2
             #value = self.ser.readline().strip("\x06")
             rem_char = self.SerialPort.inWaiting()
         
             value = self.SerialPort.read(rem_char) # .strip("\x06")
-            #print "##"+value+"##"+value.strip()+"###"
+            time.sleep(0.2)   #to avoid wrong communication
             return value.strip()
         
         
         
     def getFlowSetPoint(self):
         cmd = "FS " + str(self.channel) +" R"
-        flow = float(self.remote_cmd(cmd))   #gives N2 flow 
-        return flow*self.getGasCorrectionFactor()
+		flow = self.remote_cmd(cmd).lstrip("0")   #gives N2 flow
+		if len(flow) == 0:
+	    	flow = "0"
+        return float(int(flow))/10*self.getGasCorrectionFactor()
     def setFlowSetPoint(self,value):
-        cmd = "FS " + str(self.channel) + str(float(value)/self.getGasCorrectionFactor())
+        cmd = "FS " + str(self.channel) + " " + str(float(value)*10/self.getGasCorrectionFactor())
         return self.remote_cmd(cmd)   
     
     
-    def getAcutalFlow(self):
+    def getActualFlow(self):
         cmd = "FL " + str(self.channel)
-        flow = float(self.remote_cmd(cmd))   #gives N2 flow 
-        return flow*self.self.getGasCorrectionFactor()
+        flow = self.remote_cmd(cmd).lstrip("0")   #gives N2 flow
+		if len(flow) == 0:
+	    	flow = "0"
+        return float(int(flow))/10*self.getGasCorrectionFactor()
     
     
     def getPressureSetPoint(self):
@@ -74,11 +78,11 @@ class MKS647C_Dev(object):
         cmd = "PS "+str(value)
         return self.remote_cmd(cmd)    
     
-    def getAcutalPressure(self):
+    def getActualPressure(self):
         cmd = "PR"
         return self.remote_cmd(cmd)
         
-    def getAcutalPCS(self):
+    def getActualPCS(self):
         #check for PCS
         cmd = "PC"
         return self.remote_cmd(cmd)
@@ -172,11 +176,12 @@ class MKS647C_Dev(object):
     
     def setGasCorrectionFactor(self,factor):
         cmd = "GC "+str(self.channel)+str(factor)
-        return float(self.remote_cmd(cmd))
+        return self.remote_cmd(cmd)
     
     def getGasCorrectionFactor(self):
         cmd = "GC "+str(self.channel)+" R"
-        return float(self.remote_cmd(cmd))
+        res = self.remote_cmd(cmd)
+		return float(int(res.lstrip("0")))/100
     
     def setMode(self,mode = 0, master_channel = 0):
         """
@@ -216,11 +221,12 @@ class MKS647C_Dev(object):
         cmd = "LL " + str(self.channel) + " R"
         return self.remote_cmd(cmd)
     
-    def setPressureUnit(self,pu = 15):
+    def setPressureUnit(self,pu = 13):
         cmd = "PU " + str(pu)
         return self.remote_cmd(cmd)
     """ 
     15: 1mbar
+    13: 100ubar
     11: 1ubar
     """
     def getPressureUnit(self):
@@ -229,7 +235,7 @@ class MKS647C_Dev(object):
         
     
     def setOnAll(self):
-        return self.remote_cmd("ON 0")
+    	return self.remote_cmd("ON 0")
     def setOn(self):
         return self.remote_cmd("ON " + str(self.channel))
     def setOffAll(self):
@@ -249,7 +255,7 @@ class MKS647C_Dev(object):
         
     def getVersion(self):
         return self.remote_cmd("ID")
-    
+	 
     """
     # commands for setting values with the power supply
     
@@ -263,8 +269,32 @@ class MKS647C_Dev(object):
             self.remote_cmd('A')        
         else:
             self.remote_cmd('B')            
-   """
+	"""
    
+	def init_controller(self):
+		self.setPressureUnit()
+		
+		self.channel = 1	#Argon
+		self.setFlowSetPoint(0)
+		self.setFlowRange100sccm()
+		self.setGasCorrectionFactor("00137")
+		
+		self.channel = 2	#AN2
+		self.setFlowSetPoint(0)
+		self.setFlowRange100sccm()
+		self.setGasCorrectionFactor("00100")
+		
+		self.channel = 3	#O2
+		self.setFlowSetPoint(0)
+		self.setFlowRange100sccm()
+		self.setGasCorrectionFactor("00100")
+		
+		self.channel = 4	#ArO2
+		self.setFlowSetPoint(0)
+		self.setFlowRange10sccm()
+		self.setGasCorrectionFactor("00112")
+
+
 
 if __name__ == "__main__":
 
@@ -275,13 +305,19 @@ if __name__ == "__main__":
     ArO = MKS647C_Dev(4,mutex)
     
     print "Setting off all", Ar.setOffAll()
-    
-    print "Version: ",rd.getVersion()
+
+	#print "Initializing controller."
+	#Ar.init_controller()
+
+    print "Version: ",Ar.getVersion()
     print Ar.getFlowSetPoint()
     print N2.getFlowSetPoint()
     print O2.getFlowSetPoint()
     print ArO.getFlowSetPoint()
-    
+
+    print Ar.getGasCorrectionFactor()
+    print N2.getGasCorrectionFactor()
+    """
     print Ar.getActualFlow()
     print N2.getActualFlow()
     print O2.getActualFlow()
@@ -316,8 +352,9 @@ if __name__ == "__main__":
     print ArO.getFlowSetPoint()
     
     print Ar.getGasCorrectionFactor()
-    print Ar.getGasCorrectionFactor(137.0)
+    print Ar.setGasCorrectionFactor(137.0)
     print Ar.getGasCorrectionFactor()
     
     print Ar.getPressureUnit()
-    
+    """
+
