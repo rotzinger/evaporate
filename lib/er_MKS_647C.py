@@ -178,7 +178,7 @@ class MKS647C_Dev(object):
     def getGasCorrectionFactor(self):
         cmd = "GC "+str(self.channel)+" R"
         res = self.remote_cmd(cmd)
-		return float(res)/100
+	return float(res)/100
     
     def setMode(self,mode = 0, master_channel = 0):
         """
