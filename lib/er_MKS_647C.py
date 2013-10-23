@@ -274,7 +274,7 @@ class MKS647C_Dev(object):
 	self.channel = 1	#Argon
 	self.setFlowSetPoint(0)
 	self.setFlowRange100sccm()
-	self.setGasCorrectionFactor("00137
+	self.setGasCorrectionFactor("00137")
 	self.channel = 2	#N2
 	self.setFlowSetPoint(0)
 	self.setFlowRange100sccm()
