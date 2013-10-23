@@ -56,7 +56,7 @@ class MKS647C_Dev(object):
     	flow = self.remote_cmd(cmd)   #gives N2 flow #indent error?
     	return float(flow)/10*self.getGasCorrectionFactor()
     def setFlowSetPoint(self,value):
-        cmd = "FS " + str(self.channel) + " " + str(float(value)*10/self.getGasCorrectionFactor())
+        cmd = "FS " + str(self.channel) + str(int(float(value)/self.getGasCorrectionFactor()*10))
         return self.remote_cmd(cmd)   
     
     
@@ -171,8 +171,8 @@ class MKS647C_Dev(object):
         return flows[flownum],units[flownum]
     
     def setGasCorrectionFactor(self,factor):
-    	ffactor = "00" + str(factor).strip(".",",")
-        cmd = "GC "+str(self.channel)+str(ffactor)
+    	#ffactor = "00" + str(factor).strip(".")
+        cmd = "GC "+str(self.channel)+str(factor)
         return self.remote_cmd(cmd)
     
     def getGasCorrectionFactor(self):
@@ -269,26 +269,28 @@ class MKS647C_Dev(object):
 	"""
    
     def init_controller(self):
+        print "Initializing controller..."
 	self.setPressureUnit()
 		
 	self.channel = 1	#Argon
-	self.setFlowSetPoint(0)
+	self.setFlowSetPoint(19)
 	self.setFlowRange100sccm()
-	self.setGasCorrectionFactor("00137")
+	self.setGasCorrectionFactor("0137")
 	self.channel = 2	#N2
 	self.setFlowSetPoint(0)
 	self.setFlowRange100sccm()
-	self.setGasCorrectionFactor("00100")
+	self.setGasCorrectionFactor("0100")
 	
 	self.channel = 3	#O2
 	self.setFlowSetPoint(0)
 	self.setFlowRange100sccm()
-	self.setGasCorrectionFactor("00100")
+	self.setGasCorrectionFactor("0100")
 	
 	self.channel = 4	#ArO2
 	self.setFlowSetPoint(0)
 	self.setFlowRange10sccm()
-	self.setGasCorrectionFactor("00100") #1.12
+	self.setGasCorrectionFactor("0100") #1.12
+	print "Done."
 
 
 
@@ -302,9 +304,8 @@ if __name__ == "__main__":
     
     print "Setting off all", Ar.setOffAll()
 
-    #print "Initializing controller."
-    #Ar.init_controller()
-
+    Ar.init_controller()
+    """
     print "Version: ",Ar.getVersion()
     print Ar.getFlowSetPoint()
     print N2.getFlowSetPoint()
@@ -313,7 +314,7 @@ if __name__ == "__main__":
 
     print Ar.getGasCorrectionFactor()
     print N2.getGasCorrectionFactor()
-    """
+    
     print Ar.getActualFlow()
     print N2.getActualFlow()
     print O2.getActualFlow()
@@ -337,8 +338,9 @@ if __name__ == "__main__":
     print ArO.getFlowRange()
     
     print Ar.getActualPressure()
+    
     print Ar.setFlowRange100sccm()
-    print N2.setFlowRange100sccm()
+    print N2.setFlowRange10sccm()
     print O2.setFlowRange100sccm()
     print ArO.setFlowRange10sccm()
     
@@ -348,9 +350,8 @@ if __name__ == "__main__":
     print ArO.getFlowSetPoint()
     
     print Ar.getGasCorrectionFactor()
-    print Ar.setGasCorrectionFactor(137.0)
+    print Ar.setGasCorrectionFactor("0120")
     print Ar.getGasCorrectionFactor()
     
     print Ar.getPressureUnit()
     """
-
