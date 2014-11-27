@@ -60,8 +60,9 @@ if True:
         data.P_Devs.append(ionivac.Pressure_Dev())
         data.P_Devs[-1].getUHV()
         #print data.P_Dev.setHV(on=False)
-        #print data.P_Dev.getPM()        
-    except IOError:
+        #print data.P_Dev.getPM()
+    except:
+        #except IOError:
         print ("ER: ionivac device not loaded, loading dummy.")
         from random import random
         from math import sin
@@ -88,10 +89,20 @@ if True:
                     def getThickness(self,nm=False): return random()*100
         data.R_Dev = Rate_Dev()
         # print 'Rate:',data.R_Dev.getRate(nm=True)
-        # print 'Thickness:',data.R_Dev.getThickness(nm=True)        
-        
+        # print 'Thickness:',data.R_Dev.getThickness(nm=True) 
+       
+    try:
+        import lib.er_hp5053 as ratedev
+        data.R_Dev = ratedev.Rate_Dev()
+    except:
+        print ("ER: HP5350 Frequency counter device not loaded, loading dummy.")
+        from random import random
+        class Rate_Dev(object):
+                    def getRate(self,nm=False): return random()*10
+                    def getThickness(self,nm=False): return random()*100
+        data.R_Dev = Rate_Dev()
 
-    title="EvapoRate v3 HR@KIT/2012"
+    title="EvapoRate v4 HR@KIT/2014"
     ER = EvapoRate(data=data)
 
     #ER.edit_traits(view='plots_view')
