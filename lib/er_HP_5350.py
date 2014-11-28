@@ -21,7 +21,7 @@ class Frequency_Counter_Dev(object):
 
         #atexit.register(self.FC.ce)
             
-        self.StartFrequency=0
+        self.StartFrequency=self.getFrequency()
         self.thickness_per_f=20./400.
 
         self.lasttime=0

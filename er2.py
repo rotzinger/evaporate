@@ -92,8 +92,9 @@ if True:
         # print 'Thickness:',data.R_Dev.getThickness(nm=True) 
        
     try:
-        import lib.er_hp5053 as ratedev
-        data.R_Dev = ratedev.Rate_Dev()
+        import lib.er_HP_5350 as ratedev
+        data.R_Dev = ratedev.Frequency_Counter_Dev()
+        print "HP 5350 frequency counter loaded"
     except:
         print ("ER: HP5350 Frequency counter device not loaded, loading dummy.")
         from random import random
@@ -101,7 +102,6 @@ if True:
                     def getRate(self,nm=False): return random()*10
                     def getThickness(self,nm=False): return random()*100
         data.R_Dev = Rate_Dev()
-
     title="EvapoRate v4 HR@KIT/2014"
     ER = EvapoRate(data=data)
 

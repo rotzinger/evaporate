@@ -291,5 +291,18 @@ class ER_State(HasTraits):
             print "stop time fired, thread stopped"
 	    
     def _stop_reset_fired(self):
+        if self.stop_thread.isAlive():
+            self.stop_state = False 
+	     
+	    while(self.stop_thread.isAlive()):
+                print self.stop_thread
+		sleep(0.1)
+		
+	        #del self.stop_thread
+            self.stop_state = True
+	    self.stop_dtime = 0
+            self.stop_time = "" 
+            aq = self._ctrl_stop_thread()
+            self.stop_label = 'Stop'
 	self.stop_dtime = 0
 	self.stop_time = ""
