@@ -7,7 +7,7 @@ try:
 except:
     print "GPIB not found, starting dummy ..."
     class Gpib(object):
-    pass
+         pass
 
 
 class Frequency_Counter_Dev(object): 
@@ -16,11 +16,13 @@ class Frequency_Counter_Dev(object):
 
 
         GPIB_ID = 2
+        GPIB_ID = "HP_FC"	
         self.FC = self._std_open(GPIB_ID)
-        atexit.register(self.FC.close)
+
+        #atexit.register(self.FC.ce)
             
         self.StartFrequency=0
-        self.thickness_per_f=1
+        self.thickness_per_f=20./400.
 
         self.lasttime=0
         self.lastthickness=0
@@ -35,44 +37,67 @@ class Frequency_Counter_Dev(object):
             self.StartFrequency  = sf
     
     def _std_open(self,GPIB_ID):
-        FC = Gpib.Gpib(pad=GPIB_ID)
-        #>>>device.write('*IDN?')
-        #>>>device.read()
-
+        FC = Gpib.Gpib(GPIB_ID)
         return FC
 
     def remote_cmd(self,cmd):
-        cmd+="\r"
+        #cmd+="\n"
 
         # send command
         self.FC.write(cmd)
         # wait until data is processed
         time.sleep(0.1)
         # read back
-        value = self.FC.read()
+        #value = self.FC.read()
         
-        return value.strip()
+        #return value.strip()
+    def remote_ask(self,cmd):
+       #cmd+="\n"
+       # send command
+       self.FC.write(cmd)
+       # wait until data is processed
+       time.sleep(0.1)
+       # read back
+       message = ""
+       CR = False
+       for i in range (500):
+           value = self.FC.read(1)
+           if value == "\r":
+                CR=True
+           if CR and value == "\n":
+                break
+           message+=value
+       return message.strip()
+
+    def remote_read(self):
+       message = "" 
+       CR = False
+       for i in range (100):
+       	   value = self.FC.read(1)
+           if value == "\r":
+		CR=True
+	   if CR and value == "\n":
+                break
+           message+=value
+       return message.strip()
 
     def _setup_device(self):
-        self.remote_cmd("DCL")
         self.remote_cmd("RESET")
         self.remote_cmd("CLR")
         self.remote_cmd("INIT")
         
+	self.remote_cmd("HIGHZ")
         self.remote_cmd("RESOL,0")
         self.remote_cmd("HIRESOL,ON")
 
     def getMe(self):
-        print self.remote_cmd("ID?")
+        print self.remote_ask("ID?")
+
+    def getSetup(self):
+	print self.remote_ask("SET?")
 
     def getFrequency(self):
-        value = self.remote_cmd("")
-        # "TM1:MBAR  : 1.00E+03"
-	try:
-        	gauge,pressure = value.split(" : ")
-        	return float(pressure.strip())
-    	except:
-		return None
+        return float(self.remote_read())
     def getRate(self,nm=True):
         # we have to calculate the rate ourselves
         if not self.lasttime:
@@ -93,6 +118,10 @@ class Frequency_Counter_Dev(object):
 
 if __name__ == "__main__":
     p1 = Frequency_Counter_Dev()
+    #p1._setup_device()
+    p1.getMe()
+    #p1.getSetup()
     print "Thickness:",p1.getThickness(nm=True)
-    print "Frequency:",p1.getFrequency(nm=True)
-    print "Rate:",p1.getRate(nm=True)
+    for i in range(10):
+       print "Frequency:",p1.getFrequency()
+       print "Rate:",p1.getRate(nm=True)
