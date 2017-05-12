@@ -16,15 +16,15 @@ class Rate_Dev(object):
         set_thickness_zero = "R 4"+ack
         set_timer_zero = "R 5"+ack
         
-    def __init__(self):
+    def __init__(self,device="/dev/ttyUSB6"):
         # open serial port, 9600, 8,N,1, timeout 1s
         #device="/dev/tty.usbserial"
         baudrate = 9600
         timeout = 0.1
         if 1:
             # Port A on the USB_to_serial converter, Port B ends with K
-            device = "/dev/tty.usbserial-FTB4J8SC"
-            device = "/dev/ttyUSB0" 
+            #device = "/dev/tty.usbserial-FTB4J8SC"
+            #device = "/dev/ttyUSB0" 
             self.ser = self._std_open(device,baudrate,timeout)
             atexit.register(self.ser.close)
         if 0:

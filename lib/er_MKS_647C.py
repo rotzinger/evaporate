@@ -273,9 +273,10 @@ class MKS647C_Dev(object):
 	self.setPressureUnit()
 		
 	self.channel = 1	#Argon
-	self.setFlowSetPoint(19)
+	self.setFlowSetPoint(0)
 	self.setFlowRange100sccm()
 	self.setGasCorrectionFactor("0137")
+
 	self.channel = 2	#N2
 	self.setFlowSetPoint(0)
 	self.setFlowRange100sccm()
@@ -289,7 +290,7 @@ class MKS647C_Dev(object):
 	self.channel = 4	#ArO2
 	self.setFlowSetPoint(0)
 	self.setFlowRange10sccm()
-	self.setGasCorrectionFactor("0100") #1.12
+	self.setGasCorrectionFactor("0137") #1.12
 	print "Done."
 
 

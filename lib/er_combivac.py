@@ -5,7 +5,7 @@ import atexit
 
 class Pressure_Dev(object): 
     # in the moment only access to a combivac cm 31
-    def __init__(self):
+    def __init__(self,device="/dev/ttyUSB5"):
 
         self.ack="\x06"
         self.nak="\x15"
@@ -13,8 +13,8 @@ class Pressure_Dev(object):
         timeout = 0.1
         
         # Port A on the USB_to_serial converter,Port A with C, Port B ends with K
-        device = "/dev/tty.usbserial-FTB4J8SK" 
-	device = "/dev/ttyUSB1"
+        #device = "/dev/tty.usbserial-FTB4J8SK" 
+	#device = "/dev/ttyUSB5"
         self.ser = self._std_open(device,baudrate,timeout)
         atexit.register(self.ser.close)
             

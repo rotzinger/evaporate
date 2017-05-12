@@ -1,20 +1,26 @@
 # Pressure MKS DEV version 1.0 written by JB@KIT 2013
+# updates 05/2017
 # 
 import time,sys
 import atexit
 
 class Pressure_Dev(object): 
-    def __init__(self,device_sel = "MC"):
+    def __init__(self,device_sel = "pl1_MC"):
 
         self.ack="ACK"
         self.nak="NAK"
         baudrate = 9600
         timeout = 0.1
         
-        if device_sel == "LL":
+        if device_sel == "pl1_LL":
 	   device = "/dev/ttyUSB2"
-	else:
+	elif device_sel == "pl1_MC":
 	   device = "/dev/ttyUSB1"
+	elif device_sel == "AlOx_LL":
+	   device = "/dev/ttyUSB4"
+	else:
+	   print "Error loading MKS PDR900 insturment: Device not recognized."
+	   raise ValueError
 	   
         self.ser = self._std_open(device,baudrate,timeout)
         atexit.register(self.ser.close)

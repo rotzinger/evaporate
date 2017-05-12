@@ -58,10 +58,10 @@ if __name__ == "__main__":   #if executed as main (and not imported)
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #settings
 
-    c1 = 414
-    c2 = 724
+    c1 = 415
+    c2 = 735
 
-    effective_clean_time = 18   #effective clean time in minutes
+    effective_clean_time = 16   #effective clean time in minutes
     pause_time = 30             #pause time in seconds
 
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -123,7 +123,7 @@ if __name__ == "__main__":   #if executed as main (and not imported)
                     if err > 4:
                         raise IndexError
 
-                if refl/3 > 20:   #if reflected power too high
+                if refl/3 > 20:   #if reflected power too high #JB refl/3 >20
                     print time.strftime("%H:%M:%S"), "Reflected Power too high! Switch off\n"
                     ar_cl.setRFOff()   #switch off
                     p_refl_err = p_refl_err + 1
