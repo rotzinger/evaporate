@@ -1,5 +1,6 @@
 # RATE DEV version 0.1 written by HR@KIT 2012
-# 
+# updates 05/2017 (JB)
+
 import time,sys
 import atexit
 
@@ -21,19 +22,20 @@ class Rate_Dev(object):
         #device="/dev/tty.usbserial"
         baudrate = 9600
         timeout = 0.1
-        if 1:
-            # Port A on the USB_to_serial converter, Port B ends with K
-            #device = "/dev/tty.usbserial-FTB4J8SC"
-            #device = "/dev/ttyUSB0" 
-            self.ser = self._std_open(device,baudrate,timeout)
-            atexit.register(self.ser.close)
-        if 0:
-            """ does not work !!!"""
-            # the pyftdi emulation
-            #device="/dev/tty.usbserial"
-            device = 'ftdi:///0'
-            self.ser = self._pyftdi_open(device,baudrate,timeout)
-            
+        self.ack = "\x06"
+
+        # Port A on the USB_to_serial converter, Port B ends with K
+        #device = "/dev/tty.usbserial-FTB4J8SC"
+        #device = "/dev/ttyUSB0" 
+        self.ser = self._std_open(device,baudrate,timeout)
+        atexit.register(self.ser.close)
+        '''
+        """ does not work !!!"""
+        # the pyftdi emulation
+        #device="/dev/tty.usbserial"
+        device = 'ftdi:///0'
+        self.ser = self._pyftdi_open(device,baudrate,timeout)
+        '''
         
         # load inficon comands
         self.cmds = self.inficon_cmds()
@@ -70,7 +72,7 @@ class Rate_Dev(object):
         #value = self.ser.readline().strip("\x06")
         rem_char = self.ser.inWaiting()
         
-        value = self.ser.read(rem_char).strip("\x06")
+        value = self.ser.read(rem_char).strip(self.ack)
         #print "##"+value+"##"+value.strip()+"###"
         return value #value.strip()
     
@@ -97,5 +99,5 @@ class Rate_Dev(object):
 if __name__ == "__main__":
     rd=Rate_Dev()
     #print rd.getHello()
-    print 'Rate:',rd.getRate()/10
-    print 'Thickness:',rd.getThickness()*100
+    print 'Rate:',rd.getRate()
+    print 'Thickness:',rd.getThickness()
