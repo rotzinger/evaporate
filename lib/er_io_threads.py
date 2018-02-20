@@ -157,3 +157,17 @@ class StopThread(Thread):
 	self.ER.data.FT.log.stop()
 
     print "Exit Start/Stop time thread"
+    
+class Resistance(object):
+    
+    def __init__(self):
+        pass
+    def get_save_resistance(self):
+        #switch off sputter power supply
+        self.ER.data.SP_Dev.setStatus(False)
+        self.ER.data.Res_Dev.getR()
+        self.ER.data.SP_Dev.setStatus(False)
+        print("gsr")
+
+    
+    

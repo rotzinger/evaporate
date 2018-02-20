@@ -5,7 +5,7 @@ import atexit
 try:
     import Gpib
 except:
-    print "GPIB not found, starting dummy ..."
+    #print "GPIB not found, starting dummy ..."
     class Gpib(object):
          pass
 

@@ -27,14 +27,14 @@ class EvapoRate(HasTraits):
         ),
         resizable=True, 
         height=0.7, width=0.6, x= 0.1, y=0.1,
-        title='EvapoRate v2 HR@KIT2012'
+        title='EvapoRate HR@KIT2012-18 (git-version)'
       )
     
     traits_view = View(
         Item('er_state', style='custom',show_label=False),
         resizable=True, x=-0.01, y=0.05,
         #height=0.7, width=0.6,
-        title='EvapoRate v3 HR@KIT2012'
+        title='EvapoRate HR@KIT2012-18 (git-version)'
       )
 
     def _er_plots_default(self):

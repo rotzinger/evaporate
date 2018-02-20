@@ -16,7 +16,7 @@ from time import sleep
 from threading import Thread, Lock
 #import lib.er_pidcontrol as er_pid
 
-from lib.er_io_threads import PressureThread, FilmThread, StopThread
+from lib.er_io_threads import PressureThread, FilmThread, StopThread, Resistance
 from lib.er_gui_ctrl_plot import CtrlPlot,CtrlPID
 
 from er_gui_plots import ER_plot_component
@@ -47,6 +47,8 @@ class ER_State(HasTraits):
     P_output_plot   = Instance(CtrlPlot)    
     F_thickness_plot = Instance(CtrlPlot)
     F_rate_plot      = Instance(CtrlPlot)
+    
+    F_Resistance_plot = Instance(CtrlPlot)
 
     pressure_pid   = Instance(CtrlPID)
     # stop clock
@@ -56,6 +58,11 @@ class ER_State(HasTraits):
     stop_state = Bool(False)
     stop_reset = Button('Reset')
     stop_dtime = 0
+    
+    R_Acquire = Event
+    #get_res = Event 
+    R_Acquire_state = Bool(False)
+    R_Acquire_label = Str("get Resistance")    
     
     
     view = View(
@@ -130,6 +137,22 @@ class ER_State(HasTraits):
                     label="time",show_border=True,
                     ),                
                 #show_border=True,enabled_when='F_Acquire_state',
+                ),
+            VGroup(
+                Group(
+                    Group(
+                        Item(name='F_Resistance_plot',style='custom',show_label=False),
+                        Item('R_Acquire', show_label=False, editor = ButtonEditor(label_value = 'R_Acquire_label')),
+
+                        ),
+                    label="Resistance",show_border=True,
+                    ),
+                Group(
+                    Group(
+                        #Item(name='F_Resistance_plot',style='custom',show_label=False),
+                        ),
+                    label="diff Resistance",show_border=True,
+                    ),                
                 ),
             label="Film"), 
         ),#handler = StateHandler(),
@@ -306,3 +329,10 @@ class ER_State(HasTraits):
             self.stop_label = 'Stop'
 	self.stop_dtime = 0
 	self.stop_time = ""
+ 
+    def _R_Acquire_fired(self):
+        print ("R_event")
+        res_object = Resistance()
+        res_object.ER = self
+        res_object.get_save_resistance()
+ 

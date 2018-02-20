@@ -1,13 +1,13 @@
 # AJA DCXS DEV version 0.1 written by HR@KIT 12/2012
 # Power supply for sputtering guns
-import time,sys
+import time
 import atexit
 #import struct
 import serial
 
 class DCXS_Dev(object):
         
-    def __init__(self, device = "/dev/cu.usbserial-FTK3DEL5A" ):
+    def __init__(self, device = "/dev/ttyUSB7" ):
         # open serial port, 9600, 8,N,1, timeout 1s
         #device="/dev/tty.usbserial"
         baudrate = 38400
@@ -77,13 +77,19 @@ class DCXS_Dev(object):
         if value < minval or value > maxval:
             print "value out of range error: " + str(value) + " " + str(minval) + " " + str(maxval)
             raise ValueError
-        
+    """   
     def setOn(self,ON = False):
         if ON:
             self.remote_cmd('A')        
         else:
-            self.remote_cmd('B')            
-
+            self.remote_cmd('B')      
+    """
+    def setStatus(self,status = True):
+        if status:
+            self.remote_cmd('A')
+        else:
+            self.remote_cmd('B')
+        
     def setPoint(self,value):
         self.check_range(value,0,1000)
         cmd = 'C'+str(value)
@@ -127,5 +133,5 @@ if __name__ == "__main__":
     #print 'Gun', rd.getGun()
     #print "reg",rd.setRegulationMode()
     #print 'SetPower',rd.setPower(3)
-    print 'SetOn',rd.setOn()
+    print 'SetOn',rd.setStatus(False)
     #print 'Thickness:',rd.getThickness()*100
